@@ -1,5 +1,7 @@
 package me.gaigeshen.doudian.authorization;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.util.Date;
 
 /**
@@ -70,6 +72,11 @@ public class AccessToken {
 
   public Date getUpdateTime() {
     return updateTime;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
   }
 
   /**
