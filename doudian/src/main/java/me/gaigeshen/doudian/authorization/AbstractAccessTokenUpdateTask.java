@@ -74,10 +74,15 @@ public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdate
     if (Objects.isNull(accessToken)) {
       return;
     }
+    if (!AccessTokenHelper.isValid(accessToken)) {
+      throw new AccessTokenUpdateException("Could not save invalid access token to store, the shop id is " + shopId)
+              .setCurrentAccessToken(currentAccessToken);
+    }
     try {
       accessTokenStore.save(accessToken);
     } catch (AccessTokenStoreException e) {
-      throw new AccessTokenUpdateException("Could not save access token to store, the shop id is " + shopId).setCurrentAccessToken(currentAccessToken);
+      throw new AccessTokenUpdateException("Could not save access token to store, the shop id is " + shopId)
+              .setCurrentAccessToken(currentAccessToken);
     }
     if (Objects.nonNull(accessTokenUpdateListener)) {
       accessTokenUpdateListener.handleUpdated(currentAccessToken, accessToken);
@@ -85,11 +90,12 @@ public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdate
   }
 
   /**
-   * 此方法用于获取新的访问令牌
+   * 此方法用于获取新的访问令牌，获取到的访问令牌必须有效
    *
    * @param currentAccessToken 当前的访问令牌不能为空
-   * @return 新的访问令牌，可以为空，表示不做任何更新
+   * @return 新的访问令牌，可以为空，表示不做任何更新，返回的访问令牌必须有效，有效的访问令牌必需包含访问令牌值、刷新令牌值和店铺编号
    * @throws AccessTokenUpdateException 无法获取新的访问令牌
+   * @see AccessTokenHelper#isValid(AccessToken)
    */
   protected abstract AccessToken executeUpdate(AccessToken currentAccessToken) throws AccessTokenUpdateException;
 }
