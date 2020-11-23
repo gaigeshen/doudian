@@ -59,7 +59,7 @@ public class AccessTokenStoreJdbcImpl implements AccessTokenStore {
       // 先执行更新操作，如果更新成功则说明该店铺已经存在访问令牌
       int result = queryRunner.update(connection, UPDATE, accessToken.getAccessToken(), accessToken.getRefreshToken(),
               accessToken.getScope(), accessToken.getShopName(),
-              accessToken.getExpiresIn(), accessToken.getExpiresTimestamp(), new Date(), accessToken.getShopId());
+              accessToken.getExpiresIn(), accessToken.getExpiresTimestamp(), accessToken.getUpdateTime(), accessToken.getShopId());
       if (result > 0) {
         connection.commit();
         return false;
@@ -67,7 +67,7 @@ public class AccessTokenStoreJdbcImpl implements AccessTokenStore {
       // 为新店铺增加访问令牌
       queryRunner.update(connection, INSERT, accessToken.getAccessToken(), accessToken.getRefreshToken(),
               accessToken.getScope(), accessToken.getShopId(), accessToken.getShopName(),
-              accessToken.getExpiresIn(), accessToken.getExpiresTimestamp(), new Date());
+              accessToken.getExpiresIn(), accessToken.getExpiresTimestamp(), accessToken.getUpdateTime());
       connection.commit();
     } catch (SQLException e) {
       // 操作数据库过程中发生异常，本次所有操作失败，抛出异常
