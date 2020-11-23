@@ -29,7 +29,7 @@ public interface AccessTokenStore {
    * 查询访问令牌
    *
    * @param shopId 店铺编号不能为空
-   * @return 访问令牌
+   * @return 访问令牌可能为空
    * @throws AccessTokenStoreException 无法查询访问令牌
    */
   AccessToken findByShopId(String shopId) throws AccessTokenStoreException;
