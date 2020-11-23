@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author gaigeshen
  */
-public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdateTaskQuartzAdapter {
+public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdateTask {
 
   private AccessTokenStore accessTokenStore;
 
