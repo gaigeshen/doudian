@@ -11,6 +11,8 @@ public class AccessTokenUpdateException extends AccessTokenException {
 
   private AccessToken currentAccessToken;
 
+  private boolean canRetry;
+
   public AccessTokenUpdateException(String message) {
     super(message);
   }
@@ -30,6 +32,17 @@ public class AccessTokenUpdateException extends AccessTokenException {
   }
 
   /**
+   * 设置是否能够重试
+   *
+   * @param canRetry 是否能够重试
+   * @return 返回当前的异常
+   */
+  public AccessTokenUpdateException setCanRetry(boolean canRetry) {
+    this.canRetry = canRetry;
+    return this;
+  }
+
+  /**
    * 返回当前的访问令牌
    *
    * @return 当前的访问令牌
@@ -45,5 +58,14 @@ public class AccessTokenUpdateException extends AccessTokenException {
    */
   public boolean hasCurrentAccessToken() {
     return Objects.nonNull(currentAccessToken);
+  }
+
+  /**
+   * 返回是否能够重试
+   *
+   * @return 是否能够重试
+   */
+  public boolean isCanRetry() {
+    return canRetry;
   }
 }
