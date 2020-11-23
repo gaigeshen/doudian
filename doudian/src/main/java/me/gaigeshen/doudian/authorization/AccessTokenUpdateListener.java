@@ -8,7 +8,7 @@ package me.gaigeshen.doudian.authorization;
 @FunctionalInterface
 public interface AccessTokenUpdateListener {
   /**
-   * 在访问令牌更新成功之后被执行
+   * 在访问令牌更新成功之后被执行，此方法不要抛出任何异常
    *
    * @param oldAccessToken 旧的访问令牌
    * @param newAccessToken 新的访问令牌
