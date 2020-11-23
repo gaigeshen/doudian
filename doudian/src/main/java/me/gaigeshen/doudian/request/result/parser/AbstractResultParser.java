@@ -73,7 +73,7 @@ public abstract class AbstractResultParser implements ResultParser {
       return (R) new InputStreamResult(responseContent.getAsStream());
     }
     // Other result classes
-    return parse(responseContent, resultClass);
+    return parseInternal(responseContent, resultClass);
   }
 
   /**
