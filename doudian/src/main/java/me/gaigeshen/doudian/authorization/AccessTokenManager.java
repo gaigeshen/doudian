@@ -6,12 +6,6 @@ package me.gaigeshen.doudian.authorization;
  * @author gaigeshen
  */
 public interface AccessTokenManager {
-  /**
-   * 设置访问令牌存储器，此管理器所有的访问令牌均来自该存储器
-   *
-   * @param accessTokenStore 访问令牌存储器不能为空
-   */
-  void setAccessTokenStore(AccessTokenStore accessTokenStore);
 
   /**
    * 添加新的访问令牌，如果该访问令牌所属的店铺编号已经存在访问令牌，则会将此新的访问令牌替换掉旧的
@@ -38,4 +32,10 @@ public interface AccessTokenManager {
    */
   AccessToken findAccessToken(String shopId) throws AccessTokenManagerException;
 
+  /**
+   * 关闭此访问令牌管理器
+   *
+   * @throws AccessTokenManagerException 关闭的时候发生异常
+   */
+  void shutdown() throws AccessTokenManagerException;
 }

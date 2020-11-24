@@ -11,7 +11,7 @@ public class AccessTokenUpdateException extends AccessTokenException {
 
   private AccessToken currentAccessToken;
 
-  private boolean canRetry;
+  private boolean canRetry = false;
 
   public AccessTokenUpdateException(String message) {
     super(message);

@@ -29,21 +29,15 @@ public interface AccessTokenUpdateTask extends Runnable {
   void setShopId(String shopId);
 
   /**
-   * 执行具体的更新任务
-   *
-   * @throws AccessTokenUpdateException 更新的时候发生异常
+   * 执行具体的更新任务，注意此方法不抛出任何异常，如任务执行失败，请使用监听器传达
    */
-  void executeUpdate() throws AccessTokenUpdateException;
+  void executeUpdate();
 
   /**
-   * 不需要重新实现此方法，内部直接调用执行具体的更新任务方法，将访问令牌更新异常转换为运行时异常
+   * 不需要重新实现此方法，内部直接调用执行具体的更新任务方法
    */
   @Override
   default void run() {
-    try {
-      executeUpdate();
-    } catch (AccessTokenUpdateException e) {
-      throw new IllegalStateException("Could not update access token" + (e.hasCurrentAccessToken() ? " for current access token " + e.getCurrentAccessToken() : ""), e);
-    }
+    executeUpdate();
   }
 }

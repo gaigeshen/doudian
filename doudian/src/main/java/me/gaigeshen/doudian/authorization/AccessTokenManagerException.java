@@ -1,6 +1,8 @@
 package me.gaigeshen.doudian.authorization;
 
 /**
+ * 访问令牌管理器异常
+ *
  * @author gaigeshen
  */
 public class AccessTokenManagerException extends AccessTokenException {
