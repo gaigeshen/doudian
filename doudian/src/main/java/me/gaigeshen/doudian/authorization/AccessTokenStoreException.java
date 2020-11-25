@@ -5,7 +5,7 @@ package me.gaigeshen.doudian.authorization;
  *
  * @author gaigeshen
  */
-public class AccessTokenStoreException extends Exception {
+public class AccessTokenStoreException extends AccessTokenException {
   public AccessTokenStoreException(String message) {
     super(message);
   }
