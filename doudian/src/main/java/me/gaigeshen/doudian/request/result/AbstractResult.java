@@ -9,14 +9,14 @@ public interface AbstractResult<D> extends Result {
   /**
    * Default success code
    */
-  int DEFAULT_SUCCESS_CODE = 0;
+  Integer DEFAULT_SUCCESS_CODE = 0;
 
   /**
    * Returns {@code true} if the code equals {@link #DEFAULT_SUCCESS_CODE}
    * @return Returns {@code true} if this result is successful
    */
   default boolean isSuccessResult() {
-    return getCode() == DEFAULT_SUCCESS_CODE;
+    return DEFAULT_SUCCESS_CODE.equals(getCode());
   }
 
   /**
@@ -24,7 +24,7 @@ public interface AbstractResult<D> extends Result {
    *
    * @return The code
    */
-  int getCode();
+  Integer getCode();
 
   /**
    * Returns message
