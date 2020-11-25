@@ -29,9 +29,37 @@ public interface AccessTokenUpdateTask extends Runnable {
   void setShopId(String shopId);
 
   /**
+   * 返回设置的访问令牌存储器
+   *
+   * @return 访问令牌存储器
+   */
+  AccessTokenStore getAccessTokenStore();
+
+  /**
+   * 返回设置的访问令牌更新监听器
+   *
+   * @return 访问令牌更新监听器
+   */
+  AccessTokenUpdateListener getAccessTokenUpdateListener();
+
+  /**
+   * 返回设置的店铺编号
+   *
+   * @return 店铺编号
+   */
+  String getShopId();
+
+  /**
    * 执行具体的更新任务，注意此方法不抛出任何异常，如任务执行失败，请使用监听器传达
    */
   void executeUpdate();
+
+  /**
+   * 返回此任务的编号
+   *
+   * @return 任务编号
+   */
+  String getId();
 
   /**
    * 不需要重新实现此方法，内部直接调用执行具体的更新任务方法

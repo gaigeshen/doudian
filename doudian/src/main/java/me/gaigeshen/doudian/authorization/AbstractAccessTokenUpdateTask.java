@@ -1,6 +1,7 @@
 package me.gaigeshen.doudian.authorization;
 
 import me.gaigeshen.doudian.util.Asserts;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
@@ -45,6 +46,21 @@ public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdate
   @Override
   public final void setShopId(String shopId) {
     this.shopId = Asserts.notBlank(shopId, "shopId");
+  }
+
+  @Override
+  public final AccessTokenStore getAccessTokenStore() {
+    return accessTokenStore;
+  }
+
+  @Override
+  public final AccessTokenUpdateListener getAccessTokenUpdateListener() {
+    return accessTokenUpdateListener;
+  }
+
+  @Override
+  public final String getShopId() {
+    return shopId;
   }
 
   @Override
@@ -93,6 +109,16 @@ public abstract class AbstractAccessTokenUpdateTask implements AccessTokenUpdate
     if (Objects.nonNull(accessTokenUpdateListener)) {
       accessTokenUpdateListener.handleUpdated(currentAccessToken, accessToken);
     }
+  }
+
+  /**
+   * 直接返回店铺编号，如果没有设置店铺编号则返回固定的值
+   *
+   * @return 返回店铺编号
+   */
+  @Override
+  public final String getId() {
+    return StringUtils.defaultString(shopId, "NO_ID_YET");
   }
 
   private void handleUpdateFailed(AccessTokenUpdateException ex) {
