@@ -1,7 +1,7 @@
 package me.gaigeshen.doudian.authorization;
 
 /**
- * 访问令牌管理器，维护所有访问令牌的更新，内部依赖访问令牌存储器用于访问令牌保存
+ * 访问令牌管理器，维护所有访问令牌的更新
  *
  * @author gaigeshen
  */
