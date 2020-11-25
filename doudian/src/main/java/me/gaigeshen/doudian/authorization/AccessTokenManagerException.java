@@ -9,6 +9,9 @@ public class AccessTokenManagerException extends AccessTokenException {
   public AccessTokenManagerException(String message) {
     super(message);
   }
+  public AccessTokenManagerException(Throwable cause) {
+    super(cause);
+  }
   public AccessTokenManagerException(String message, Throwable cause) {
     super(message, cause);
   }

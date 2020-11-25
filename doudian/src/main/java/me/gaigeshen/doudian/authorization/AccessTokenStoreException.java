@@ -9,6 +9,9 @@ public class AccessTokenStoreException extends AccessTokenException {
   public AccessTokenStoreException(String message) {
     super(message);
   }
+  public AccessTokenStoreException(Throwable cause) {
+    super(cause);
+  }
   public AccessTokenStoreException(String message, Throwable cause) {
     super(message, cause);
   }

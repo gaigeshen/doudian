@@ -9,6 +9,9 @@ public class UnsupportedAccessTokenUpdateTaskSchedulerException extends AccessTo
   public UnsupportedAccessTokenUpdateTaskSchedulerException(String message) {
     super(message);
   }
+  public UnsupportedAccessTokenUpdateTaskSchedulerException(Throwable cause) {
+    super(cause);
+  }
   public UnsupportedAccessTokenUpdateTaskSchedulerException(String message, Throwable cause) {
     super(message, cause);
   }

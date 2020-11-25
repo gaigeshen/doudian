@@ -9,6 +9,9 @@ public class AccessTokenUpdateTaskSchedulerException extends AccessTokenExceptio
   public AccessTokenUpdateTaskSchedulerException(String message) {
     super(message);
   }
+  public AccessTokenUpdateTaskSchedulerException(Throwable cause) {
+    super(cause);
+  }
   public AccessTokenUpdateTaskSchedulerException(String message, Throwable cause) {
     super(message, cause);
   }

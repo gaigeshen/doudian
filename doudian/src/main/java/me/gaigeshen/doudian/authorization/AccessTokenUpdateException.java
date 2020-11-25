@@ -16,6 +16,11 @@ public class AccessTokenUpdateException extends AccessTokenException {
   public AccessTokenUpdateException(String message) {
     super(message);
   }
+
+  public AccessTokenUpdateException(Throwable cause) {
+    super(cause);
+  }
+
   public AccessTokenUpdateException(String message, Throwable cause) {
     super(message, cause);
   }

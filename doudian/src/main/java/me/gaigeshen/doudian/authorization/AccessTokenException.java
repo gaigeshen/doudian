@@ -7,6 +7,10 @@ package me.gaigeshen.doudian.authorization;
  */
 public class AccessTokenException extends Exception {
 
+  public AccessTokenException(Throwable cause) {
+    super(cause);
+  }
+
   public AccessTokenException(String message) {
     super(message);
   }
