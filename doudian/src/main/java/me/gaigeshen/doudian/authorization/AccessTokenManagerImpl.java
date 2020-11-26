@@ -111,7 +111,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
     try {
       accessTokenUpdateTaskScheduler.shutdown();
     } catch (AccessTokenUpdateTaskSchedulerException e) {
-      throw new AccessTokenManagerException("Could not shutdown access token update task scheduler", e);
+      throw new AccessTokenManagerException("Could not shutdown this access token manager", e);
     }
   }
 
@@ -175,9 +175,6 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
     if (accessTokenUpdateTaskScheduler instanceof AccessTokenUpdateTaskSchedulerImpl) {
       return new AccessTokenUpdateTaskImpl(accessToken.getShopId(), accessTokenUpdateListener);
     }
-    if (accessTokenUpdateTaskScheduler instanceof AccessTokenUpdateTaskSchedulerQuartzImpl) {
-      return new AccessTokenUpdateTaskQuartzImpl(accessToken.getShopId(), accessTokenUpdateListener);
-    }
     throw new UnsupportedAccessTokenUpdateTaskSchedulerException(accessTokenUpdateTaskScheduler.getClass() + " unsupported");
   }
 
@@ -220,27 +217,6 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
   private class AccessTokenUpdateTaskImpl extends AbstractAccessTokenUpdateTask {
 
     public AccessTokenUpdateTaskImpl(String shopId, AccessTokenUpdateListener accessTokenUpdateListener) {
-      setAccessTokenStore(accessTokenStore);
-      setShopId(shopId);
-      if (Objects.nonNull(accessTokenUpdateListener)) {
-        setAccessTokenUpdateListener(accessTokenUpdateListener);
-      }
-    }
-
-    @Override
-    protected AccessToken executeUpdate(AccessToken currentAccessToken) throws AccessTokenUpdateException {
-      return accessTokenRefresher.refresh(currentAccessToken);
-    }
-  }
-
-  /**
-   * 访问令牌更新任务实现，结合调度框架
-   *
-   * @author gaigeshen
-   */
-  private class AccessTokenUpdateTaskQuartzImpl extends AbstractAccessTokenUpdateTask implements AccessTokenUpdateTaskQuartzAdapter {
-
-    public AccessTokenUpdateTaskQuartzImpl(String shopId, AccessTokenUpdateListener accessTokenUpdateListener) {
       setAccessTokenStore(accessTokenStore);
       setShopId(shopId);
       if (Objects.nonNull(accessTokenUpdateListener)) {
