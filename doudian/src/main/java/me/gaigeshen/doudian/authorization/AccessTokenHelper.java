@@ -87,10 +87,13 @@ public class AccessTokenHelper {
    *
    * @param appKey 应用编号不能为空
    * @param appSecret 应用密钥不能为空
-   * @param refreshToken 刷新令牌
+   * @param refreshToken 刷新令牌不能为空
    * @return 访问令牌刷新链接
    */
   public static String getAccessTokenRefreshUrl(String appKey, String appSecret, String refreshToken) {
+    Asserts.notBlank(appKey, "appKey");
+    Asserts.notBlank(appSecret, "appSecret");
+    Asserts.notBlank(refreshToken, "refreshToken");
     return String.format(ACCESS_TOKEN_REFRESH_TEMPLATE_URL, appKey, appSecret, refreshToken);
   }
 }
