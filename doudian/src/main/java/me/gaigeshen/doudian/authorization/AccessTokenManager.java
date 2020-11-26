@@ -12,8 +12,9 @@ public interface AccessTokenManager {
    *
    * @param accessToken 待添加的访问令牌不能为空
    * @throws AccessTokenManagerException 无法添加访问令牌
+   * @throws InvalidAccessTokenException 该访问令牌无效
    */
-  void addNewAccessToken(AccessToken accessToken) throws AccessTokenManagerException;
+  void addNewAccessToken(AccessToken accessToken) throws AccessTokenManagerException, InvalidAccessTokenException;
 
   /**
    * 删除访问令牌
@@ -33,7 +34,7 @@ public interface AccessTokenManager {
   AccessToken findAccessToken(String shopId) throws AccessTokenManagerException;
 
   /**
-   * 关闭此访问令牌管理器
+   * 关闭此访问令牌管理器，此方法被调用之后将会停止所有访问令牌的更新，但应该不影响查询或者删除访问令牌
    *
    * @throws AccessTokenManagerException 关闭的时候发生异常
    */

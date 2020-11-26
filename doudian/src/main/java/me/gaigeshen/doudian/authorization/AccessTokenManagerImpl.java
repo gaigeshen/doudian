@@ -4,7 +4,9 @@ import me.gaigeshen.doudian.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 访问令牌管理器实现，所有的访问令牌均来自所依赖的访问令牌存储器，创建此管理器的时候，会同时为存储器中所有的访问令牌创建并调度更新任务
@@ -15,45 +17,25 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 
   private static final Logger logger = LoggerFactory.getLogger(AccessTokenManagerImpl.class);
 
+  private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+
   private final AccessTokenStore accessTokenStore;
 
-  private final AccessTokenRefresher accessTokenRefresher;
-
-  private final AccessTokenUpdateTaskScheduler accessTokenUpdateTaskScheduler;
+  private final AccessTokenExchanger accessTokenExchanger;
 
   /**
    * 创建访问令牌管理器，将会从访问令牌存储器中查询所有的访问令牌，并为这些访问令牌创建并调度更新任务
    *
    * @param accessTokenStore 访问令牌存储器不能为空
-   * @param accessTokenRefresher 访问令牌刷新器不能为空
-   * @param accessTokenUpdateTaskScheduler 访问令牌更新任务调度器不能为空，此访问令牌管理器负责该任务调度器的关闭
+   * @param accessTokenExchanger 访问令牌换取器不能为空
    * @throws AccessTokenManagerException 在为访问令牌创建并调度更新任务的时候发生异常
    */
-  public AccessTokenManagerImpl(AccessTokenStore accessTokenStore,
-                                AccessTokenRefresher accessTokenRefresher,
-                                AccessTokenUpdateTaskScheduler accessTokenUpdateTaskScheduler) throws AccessTokenManagerException {
-    Asserts.notNull(accessTokenStore, "accessTokenStore");
-    Asserts.notNull(accessTokenRefresher, "accessTokenRefresher");
-    Asserts.notNull(accessTokenUpdateTaskScheduler, "accessTokenUpdateTaskScheduler");
-
-    this.accessTokenStore = accessTokenStore;
-    this.accessTokenRefresher = accessTokenRefresher;
-    this.accessTokenUpdateTaskScheduler = accessTokenUpdateTaskScheduler;
+  public AccessTokenManagerImpl(AccessTokenStore accessTokenStore, AccessTokenExchanger accessTokenExchanger)
+          throws AccessTokenManagerException {
+    this.accessTokenStore = Asserts.notNull(accessTokenStore, "accessTokenStore");
+    this.accessTokenExchanger = Asserts.notNull(accessTokenExchanger, "accessTokenExchanger");
 
     createAndScheduleUpdateTasks();
-  }
-
-  /**
-   * 创建访问令牌管理器，使用默认的访问令牌更新任务调度器，将会从访问令牌存储器中查询所有的访问令牌，并为这些访问令牌创建并调度更新任务
-   *
-   * @param accessTokenStore 访问令牌存储器不能为空
-   * @param accessTokenRefresher 访问令牌刷新器不能为空
-   * @throws AccessTokenManagerException 在为访问令牌创建并调度更新任务的时候发生异常
-   * @see AccessTokenUpdateTaskSchedulerImpl
-   */
-  public AccessTokenManagerImpl(AccessTokenStore accessTokenStore,
-                                AccessTokenRefresher accessTokenRefresher) throws AccessTokenManagerException {
-    this(accessTokenStore, accessTokenRefresher, new AccessTokenUpdateTaskSchedulerImpl(2));
   }
 
   /**
@@ -64,8 +46,11 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
    * @see #shutdown()
    */
   @Override
-  public void addNewAccessToken(AccessToken accessToken) throws AccessTokenManagerException {
+  public void addNewAccessToken(AccessToken accessToken) throws AccessTokenManagerException, InvalidAccessTokenException {
     Asserts.notNull(accessToken, "accessToken");
+    if (!AccessTokenHelper.isValid(accessToken)) {
+      throw new InvalidAccessTokenException("Could not add invalid access token " + accessToken);
+    }
     try {
       if (!accessTokenStore.save(accessToken)) {
         return;
@@ -101,100 +86,77 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
   }
 
   /**
-   * 内部关闭访问令牌更新任务调度器，由于添加新的访问令牌方法可能会使用到该任务调度器，所以可能会影响到该方法的正常调用，其他方法不受影响
+   * 关闭此访问令牌管理器，调用此方法之后，将无法创建并调度新的访问令牌更新任务，此方法的调用可能需要等待
    *
-   * @throws AccessTokenManagerException 关闭的时候发生异常
-   * @see #addNewAccessToken(AccessToken)
+   * @throws AccessTokenManagerException 等待关闭的时候发生异常
    */
   @Override
   public synchronized void shutdown() throws AccessTokenManagerException {
+    executorService.shutdownNow();
     try {
-      accessTokenUpdateTaskScheduler.shutdown();
-    } catch (AccessTokenUpdateTaskSchedulerException e) {
-      throw new AccessTokenManagerException("Could not shutdown this access token manager", e);
+      executorService.awaitTermination(10, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      throw new AccessTokenManagerException("Current thread interrupted while shutting down this access token manager", e);
     }
   }
 
-  /**
-   * 将为所有的访问令牌创建并调度更新任务，有可能发生异常导致部分访问令牌没有成功调度更新任务，不建议继续使用此访问令牌管理器
-   *
-   * @throws AccessTokenManagerException 发生异常，不要继续使用此访问令牌管理器，也不要重新调用此方法
-   */
   private void createAndScheduleUpdateTasks() throws AccessTokenManagerException {
     try {
       for (AccessToken accessToken : accessTokenStore.findAll()) {
         createAndScheduleUpdateTask(accessToken);
       }
-    } catch (AccessTokenStoreException | AccessTokenUpdateTaskSchedulerException | InvalidAccessTokenException e) {
-      throw new AccessTokenManagerException("Could not schedule update tasks", e);
+    } catch (Exception e) {
+      throw new AccessTokenManagerException("Could not schedule access token update tasks", e);
     }
   }
 
-  /**
-   * 通过给定的访问令牌创建并调度访问令牌更新任务，默认的延迟执行时间为该访问令牌过期前半个小时
-   *
-   * @param accessToken 访问令牌不能为空，且不能为无效的访问令牌
-   * @throws AccessTokenUpdateTaskSchedulerException 任务调度的时候发生异常
-   * @throws InvalidAccessTokenException 无效的访问令牌
-   * @see AccessTokenHelper#isValid(AccessToken)
-   */
-  private void createAndScheduleUpdateTask(AccessToken accessToken) throws AccessTokenUpdateTaskSchedulerException, InvalidAccessTokenException {
+  private void createAndScheduleUpdateTask(AccessToken accessToken) {
     long executionTimestamp = accessToken.getExpiresTimestamp() - 1800;
     createAndScheduleUpdateTask(accessToken, executionTimestamp - System.currentTimeMillis() / 1000);
   }
 
-  /**
-   * 通过给定的访问令牌创建并调度访问令牌更新任务，覆盖默认的延迟执行时间
-   *
-   * @param accessToken 访问令牌不能为空，且不能为无效的访问令牌
-   * @param delaySeconds 延迟执行时间单位秒
-   * @throws AccessTokenUpdateTaskSchedulerException 任务调度的时候发生异常
-   * @throws InvalidAccessTokenException 无效的访问令牌
-   * @see AccessTokenHelper#isValid(AccessToken)
-   */
-  private void createAndScheduleUpdateTask(AccessToken accessToken, long delaySeconds) throws AccessTokenUpdateTaskSchedulerException, InvalidAccessTokenException {
-    AccessTokenUpdateTask task = createUpdateTask(accessToken, new AccessTokenUpdateListenerImpl());
-    accessTokenUpdateTaskScheduler.schedule(task, delaySeconds);
+  private void createAndScheduleUpdateTask(AccessToken accessToken, long delaySeconds) {
+    executorService.schedule(createUpdateTask(accessToken), delaySeconds, TimeUnit.SECONDS);
+  }
+
+  private AccessTokenUpdateTask createUpdateTask(AccessToken accessToken) {
+    return new AccessTokenUpdateTaskImpl(accessToken.getShopId());
   }
 
   /**
-   * 创建访问令牌更新任务
+   * 访问令牌更新任务实现，使用当前访问令牌管理器关联的存储器
    *
-   * @param accessToken 访问令牌不能为空，且不能为无效的访问令牌
-   * @param accessTokenUpdateListener 访问令牌更新监听器可以不设置
-   * @return 访问令牌更新任务
-   * @throws InvalidAccessTokenException 无效的访问令牌
-   * @throws UnsupportedAccessTokenUpdateTaskSchedulerException 不支持的访问令牌调度器
-   * @see AccessTokenHelper#isValid(AccessToken)
+   * @author gaigeshen
    */
-  private AccessTokenUpdateTask createUpdateTask(AccessToken accessToken, AccessTokenUpdateListener accessTokenUpdateListener)
-          throws InvalidAccessTokenException, UnsupportedAccessTokenUpdateTaskSchedulerException {
-    if (!AccessTokenHelper.isValid(accessToken)) {
-      throw new InvalidAccessTokenException("Could not create access token update task because access token invalid, " + accessToken);
+  private class AccessTokenUpdateTaskImpl extends AbstractAccessTokenUpdateTask {
+
+    public AccessTokenUpdateTaskImpl(String shopId) {
+      setAccessTokenStore(accessTokenStore);
+      setAccessTokenUpdateListener(new AccessTokenUpdateListenerImpl());
+      setShopId(shopId);
     }
-    if (accessTokenUpdateTaskScheduler instanceof AccessTokenUpdateTaskSchedulerImpl) {
-      return new AccessTokenUpdateTaskImpl(accessToken.getShopId(), accessTokenUpdateListener);
+
+    @Override
+    protected AccessToken executeUpdate(AccessToken currentAccessToken) throws AccessTokenUpdateException {
+      return accessTokenExchanger.refresh(currentAccessToken);
     }
-    throw new UnsupportedAccessTokenUpdateTaskSchedulerException(accessTokenUpdateTaskScheduler.getClass() + " unsupported");
   }
 
   /**
-   * 访问令牌更新监听器实现
+   * 访问令牌更新监听器实现，在访问令牌被更新成功之后（获取到新的访问令牌且保存到存储器中成功），将会创建并调度新的访问令牌更新任务，
    *
    * @author gaigeshen
    */
   private class AccessTokenUpdateListenerImpl implements AccessTokenUpdateListener {
-
     @Override
     public void handleUpdated(AccessToken oldAccessToken, AccessToken newAccessToken) {
       logger.info("Access token updated, old access token is {}, new access token is {}", oldAccessToken, newAccessToken);
       try {
         createAndScheduleUpdateTask(newAccessToken);
       } catch (Exception e) {
-        logger.warn("Could not schedule update task, current access token is " + newAccessToken, e);
+        logger.warn("Could not schedule access token update task, current access token is " + newAccessToken, e);
       }
     }
-
     @Override
     public void handleFailed(AccessTokenUpdateException ex) {
       logger.warn("Access token update failed" + (ex.isCanRetry() ? ", retry again 10 seconds later" : "")
@@ -206,27 +168,6 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
           logger.warn("Could not reschedule update task, current access token is " + ex.getCurrentAccessToken(), e);
         }
       }
-    }
-  }
-
-  /**
-   * 访问令牌更新任务实现
-   *
-   * @author gaigeshen
-   */
-  private class AccessTokenUpdateTaskImpl extends AbstractAccessTokenUpdateTask {
-
-    public AccessTokenUpdateTaskImpl(String shopId, AccessTokenUpdateListener accessTokenUpdateListener) {
-      setAccessTokenStore(accessTokenStore);
-      setShopId(shopId);
-      if (Objects.nonNull(accessTokenUpdateListener)) {
-        setAccessTokenUpdateListener(accessTokenUpdateListener);
-      }
-    }
-
-    @Override
-    protected AccessToken executeUpdate(AccessToken currentAccessToken) throws AccessTokenUpdateException {
-      return accessTokenRefresher.refresh(currentAccessToken);
     }
   }
 }

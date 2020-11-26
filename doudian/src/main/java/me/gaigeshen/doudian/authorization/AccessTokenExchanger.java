@@ -1,11 +1,22 @@
 package me.gaigeshen.doudian.authorization;
 
 /**
- * 访问令牌刷新器
+ * 访问令牌换取器
  *
  * @author gaigeshen
  */
-public interface AccessTokenRefresher {
+public interface AccessTokenExchanger {
+  /**
+   * 通过授权码获取访问令牌
+   *
+   * @param authorizationCode 授权码
+   * @return 访问令牌
+   * @throws AccessTokenExchangeException 无法获取访问令牌
+   */
+  default AccessToken get(String authorizationCode) throws AccessTokenExchangeException {
+    throw new AccessTokenExchangeException("Please override this method to get access token");
+  }
+
   /**
    * 刷新访问令牌
    *

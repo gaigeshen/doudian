@@ -70,7 +70,7 @@ public class Metadata {
   /**
    * Returns boolean value
    *
-   * @return If require access token, returns {@code true}, this access token will be append to url
+   * @return If require access token, returns {@code true}, this access token will be appended to url
    */
   public boolean isRequireAccessToken() {
     return requireAccessToken;

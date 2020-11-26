@@ -1,13 +1,15 @@
-package me.gaigeshen.doudian;
+package me.gaigeshen.doudian.client;
 
+import lombok.Setter;
 import me.gaigeshen.doudian.request.result.AbstractResult;
 
 /**
- * 基本的请求响应结果
+ * 抖店请求响应结果
  *
  * @author gaigeshen
  */
-public abstract class BaseResult<D> implements AbstractResult<D> {
+@Setter
+public class DoudianResult<D> implements AbstractResult<D> {
 
   private Integer errNo; // 异常码
 
@@ -28,19 +30,5 @@ public abstract class BaseResult<D> implements AbstractResult<D> {
   @Override
   public final D getData() {
     return data;
-  }
-
-  // =================== Setter methods
-
-  public void setErrNo(Integer errNo) {
-    this.errNo = errNo;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public void setData(D data) {
-    this.data = data;
   }
 }
