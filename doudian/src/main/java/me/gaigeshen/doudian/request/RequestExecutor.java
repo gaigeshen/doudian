@@ -5,13 +5,15 @@ import me.gaigeshen.doudian.http.ResponseContent;
 import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.result.Result;
 
+import java.io.Closeable;
+
 /**
  * Request executor, execute with {@link RequestContent} and returns {@link ResponseContent},
  * can also execute with {@link Content} and returns {@link Result}
  *
  * @author gaigeshen
  */
-public interface RequestExecutor {
+public interface RequestExecutor extends Closeable {
   /**
    * Execute with content and returns result
    *

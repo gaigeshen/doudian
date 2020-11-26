@@ -28,7 +28,7 @@ import java.util.Collection;
  * @see Result
  * @see Closeable
  */
-public class RequestExecutorImpl implements RequestExecutor, Closeable {
+public class RequestExecutorImpl implements RequestExecutor {
 
   private final WebClient webClient; // Cannot be null
 
