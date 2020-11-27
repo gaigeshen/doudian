@@ -19,7 +19,7 @@ public class DoudianClientImpl extends AbstractDoudianClient {
   }
 
   @Override
-  public String getAuthorizeUrl(String redirectUri) {
+  public String getAuthorizeUrl() {
     return null;
   }
 }

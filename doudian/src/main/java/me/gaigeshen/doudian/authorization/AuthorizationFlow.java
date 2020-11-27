@@ -9,10 +9,9 @@ public interface AuthorizationFlow {
   /**
    * 获取授权链接
    *
-   * @param redirectUri 授权回调地址不能为空
    * @return 授权链接
    */
-  String getAuthorizeUrl(String redirectUri);
+  String getAuthorizeUrl();
 
   /**
    * 处理授权码
