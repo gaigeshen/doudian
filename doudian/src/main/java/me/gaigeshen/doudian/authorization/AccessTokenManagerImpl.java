@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 访问令牌管理器实现，所有的访问令牌均来自所依赖的访问令牌存储器，创建此管理器的时候，会同时为存储器中所有的访问令牌创建并调度更新任务
+ * 访问令牌管理器实现，创建此管理器的时候，会同时为存储器中所有的访问令牌创建并调度更新任务，这些任务的执行时间早于访问令牌过期时间半小时
  *
  * @author gaigeshen
  */
@@ -21,19 +21,19 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 
   private final AccessTokenStore accessTokenStore;
 
-  private final AccessTokenExchanger accessTokenExchanger;
+  private final AccessTokenRefresher accessTokenRefresher;
 
   /**
    * 创建访问令牌管理器，将会从访问令牌存储器中查询所有的访问令牌，并为这些访问令牌创建并调度更新任务
    *
    * @param accessTokenStore 访问令牌存储器不能为空
-   * @param accessTokenExchanger 访问令牌换取器不能为空
+   * @param accessTokenRefresher 访问令牌刷新器不能为空
    * @throws AccessTokenManagerException 在为访问令牌创建并调度更新任务的时候发生异常
    */
-  public AccessTokenManagerImpl(AccessTokenStore accessTokenStore, AccessTokenExchanger accessTokenExchanger)
+  public AccessTokenManagerImpl(AccessTokenStore accessTokenStore, AccessTokenRefresher accessTokenRefresher)
           throws AccessTokenManagerException {
     this.accessTokenStore = Asserts.notNull(accessTokenStore, "accessTokenStore");
-    this.accessTokenExchanger = Asserts.notNull(accessTokenExchanger, "accessTokenExchanger");
+    this.accessTokenRefresher = Asserts.notNull(accessTokenRefresher, "accessTokenRefresher");
 
     createAndScheduleUpdateTasks();
   }
@@ -138,7 +138,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 
     @Override
     protected AccessToken executeUpdate(AccessToken currentAccessToken) throws AccessTokenUpdateException {
-      return accessTokenExchanger.refresh(currentAccessToken);
+      return accessTokenRefresher.refresh(currentAccessToken);
     }
   }
 
@@ -159,7 +159,8 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
     }
     @Override
     public void handleFailed(AccessTokenUpdateException ex) {
-      logger.warn("Access token update failed" + (ex.isCanRetry() ? ", retry again 10 seconds later" : "")
+      logger.warn("Access token update failed"
+              + (ex.isCanRetry() ? ", retry again 10 seconds later" : "")
               + (ex.hasCurrentAccessToken() ? ", current access token is " + ex.getCurrentAccessToken() : ""), ex);
       if (ex.isCanRetry() && ex.hasCurrentAccessToken()) {
         try {

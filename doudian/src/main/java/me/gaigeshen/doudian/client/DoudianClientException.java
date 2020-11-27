@@ -3,7 +3,7 @@ package me.gaigeshen.doudian.client;
 /**
  * @author gaigeshen
  */
-public class DoudianClientException extends Exception {
+public class DoudianClientException extends RuntimeException {
   public DoudianClientException(String message) {
     super(message);
   }

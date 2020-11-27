@@ -1,6 +1,8 @@
 package me.gaigeshen.doudian.authorization;
 
 /**
+ * 刷新访问令牌异常
+ *
  * @author gaigeshen
  */
 public class AccessTokenRefreshException extends AccessTokenUpdateException {
