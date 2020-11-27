@@ -48,6 +48,6 @@ public class ContentParserMultipartParametersImpl extends AbstractContentParser 
 
   @Override
   public boolean supports(Metadata metadata) {
-    return metadata.getType().equals(Metadata.Type.MULTIPART_PARAMETERS);
+    return super.supports(metadata) || metadata.getType().equals(Metadata.Type.MULTIPART_PARAMETERS);
   }
 }

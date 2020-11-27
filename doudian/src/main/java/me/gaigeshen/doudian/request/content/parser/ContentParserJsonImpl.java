@@ -46,6 +46,6 @@ public class ContentParserJsonImpl extends AbstractContentParser {
 
   @Override
   public boolean supports(Metadata metadata) {
-    return metadata.getType().equals(Metadata.Type.JSON);
+    return super.supports(metadata) || metadata.getType().equals(Metadata.Type.JSON);
   }
 }

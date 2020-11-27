@@ -53,6 +53,6 @@ public class ContentParserParametersImpl extends AbstractContentParser {
 
   @Override
   public boolean supports(Metadata metadata) {
-    return metadata.getType().equals(Metadata.Type.PARAMETERS);
+    return super.supports(metadata) || metadata.getType().equals(Metadata.Type.PARAMETERS);
   }
 }

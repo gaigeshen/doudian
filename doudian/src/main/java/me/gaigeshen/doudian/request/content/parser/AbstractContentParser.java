@@ -49,6 +49,17 @@ public abstract class AbstractContentParser implements ContentParser {
     return DEFAULT_CHARSET;
   }
 
+  /**
+   * Please override this method like this: {@code return super.supports(metadata) || metadata.getType().equals(Metadata.Type.PARAMETERS)}
+   *
+   * @param metadata Valid metadata, cannot be null
+   * @return Returns {@code true} if the metadata's type is {@link Metadata.Type#NONE} or other type
+   */
+  @Override
+  public boolean supports(Metadata metadata) {
+    return Metadata.Type.NONE.equals(metadata.getType());
+  }
+
   @Override
   public final RequestContent parse(Content<?> content, Metadata metadata, String accessToken, Object... urlValues) throws ContentParserException {
     // Assemble url and parse content use this charset
