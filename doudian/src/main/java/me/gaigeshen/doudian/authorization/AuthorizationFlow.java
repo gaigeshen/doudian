@@ -14,7 +14,7 @@ public interface AuthorizationFlow {
   String getAuthorizeUrl();
 
   /**
-   * 处理授权码
+   * 处理授权码，该授权码是通过访问授权链接重定向得到
    *
    * @param authorizationCode 授权码不能为空，如果为空则应该抛出授权异常
    * @throws AuthorizationException 处理授权码过程发生异常

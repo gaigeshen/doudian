@@ -1,6 +1,5 @@
 package me.gaigeshen.doudian.client;
 
-import lombok.Setter;
 import me.gaigeshen.doudian.request.result.AbstractResult;
 
 /**
@@ -8,7 +7,6 @@ import me.gaigeshen.doudian.request.result.AbstractResult;
  *
  * @author gaigeshen
  */
-@Setter
 public class DoudianResult<D> implements AbstractResult<D> {
 
   private Integer errNo; // 异常码
@@ -30,5 +28,17 @@ public class DoudianResult<D> implements AbstractResult<D> {
   @Override
   public final D getData() {
     return data;
+  }
+
+  public void setErrNo(Integer errNo) {
+    this.errNo = errNo;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  public void setData(D data) {
+    this.data = data;
   }
 }

@@ -1,7 +1,11 @@
 package me.gaigeshen.doudian.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.gaigeshen.doudian.authorization.*;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import me.gaigeshen.doudian.authorization.AccessToken;
+import me.gaigeshen.doudian.authorization.AccessTokenStore;
+import me.gaigeshen.doudian.authorization.AccessTokenStoreException;
+import me.gaigeshen.doudian.authorization.AccessTokenStoreImpl;
 import me.gaigeshen.doudian.http.RequestContent;
 import me.gaigeshen.doudian.http.ResponseContent;
 import me.gaigeshen.doudian.http.WebClientConfig;
@@ -14,200 +18,159 @@ import me.gaigeshen.doudian.request.content.parser.ContentParserParametersImpl;
 import me.gaigeshen.doudian.request.result.Result;
 import me.gaigeshen.doudian.request.result.parser.ResultParser;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
-
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 
 /**
- * 抽象的抖店接口客户端，通过重写相关的配置方法可以修改默认的配置，在创建的时候初始化内部的访问令牌管理器和请求执行器
+ * 抖店开放平台接口抽象，查看每个方法了解具体的细节
  *
  * @author gaigeshen
  */
-public abstract class AbstractDoudianClient implements DoudianClient {
+public abstract class AbstractDoudianClient implements DoudianClient, RequestExecutor {
 
-  private final AccessTokenManager accessTokenManager;
+  private final AccessTokenStore accessTokenStore;
 
   private final RequestExecutor requestExecutor;
 
+  /**
+   * 此类构造采用默认的访问令牌存储器，以及默认的用于接口请求客户端的配置
+   */
   protected AbstractDoudianClient() {
-    this.accessTokenManager = createAccessTokenManager();
-    this.requestExecutor = createRequestExecutor();
-  }
-
-  private AccessTokenManager createAccessTokenManager() {
-    AccessTokenStore accessTokenStore = getAccessTokenStore();
-    if (Objects.isNull(accessTokenStore)) {
-      throw new DoudianClientConfigException("'accessTokenStore' cannot be null");
-    }
-    try {
-      return new AccessTokenManagerImpl(accessTokenStore, new AccessTokenRefresher() {
-        @Override
-        public AccessToken refresh(AccessToken oldAccessToken) throws AccessTokenRefreshException {
-          return refreshAccessToken(oldAccessToken);
-        }
-      });
-    } catch (AccessTokenManagerException e) {
-      throw new DoudianClientException("Could not create access token manager", e);
-    }
-  }
-
-  private RequestExecutor createRequestExecutor() {
-    WebClientConfig webClientConfig = getWebClientConfig();
-    if (Objects.isNull(webClientConfig)) {
-      throw new DoudianClientConfigException("'webClientConfig' cannot be null");
-    }
-    Collection<ContentParser> contentParsers = getContentParsers();
-    if (Objects.isNull(contentParsers)) {
-      throw new DoudianClientConfigException("'contentParsers' cannot be null");
-    }
-    Collection<ResultParser> resultParsers = getResultParsers();
-    if (Objects.isNull(resultParsers)) {
-      throw new DoudianClientConfigException("'resultParsers' cannot be null");
-    }
-    return RequestExecutorImpl.create(webClientConfig, contentParsers, resultParsers);
+    this(new AccessTokenStoreImpl());
   }
 
   /**
-   * 重写此方法可以返回指定的访问令牌存储器，默认是简单的基于内存的哈希存储，此类存储器不适合在生产环境使用，在系统重启时会丢失所有的访问令牌
+   * 此类构造需要访问令牌管理器，以及默认的用于接口请求客户端的配置
    *
-   * @return 访问令牌存储器
+   * @param accessTokenStore 访问令牌存储器不能为空，仅用于查询店铺的访问令牌
    */
-  protected AccessTokenStore getAccessTokenStore() {
-    return new AccessTokenStoreImpl();
+  protected AbstractDoudianClient(AccessTokenStore accessTokenStore) {
+    this(accessTokenStore, WebClientConfig.getDefault());
   }
 
   /**
-   * 重写此方法可以返回指定的配置用于网络请求，有默认配置
+   * 此类构造需要访问令牌管理器和用于接口请求客户端的配置
    *
-   * @return 配置用于网络请求
+   * @param accessTokenStore 访问令牌存储器不能为空，仅用于查询店铺的访问令牌
+   * @param webClientConfig 用于接口请求客户端的配置不能为空
    */
-  protected WebClientConfig getWebClientConfig() {
-    return WebClientConfig.getDefault();
+  protected AbstractDoudianClient(AccessTokenStore accessTokenStore, WebClientConfig webClientConfig) {
+    this.accessTokenStore = accessTokenStore;
+    this.requestExecutor = RequestExecutorImpl.create(webClientConfig, getContentParsers(), getResultParsers());
   }
 
   /**
-   * 重写此方法可以返回指定的请求内容转换器集合，有默认配置
+   * 重写此方法覆盖默认的配置
    *
-   * @return 请求内容转换器集合
+   * @return 返回请求内容转换器集合
    */
   protected Collection<ContentParser> getContentParsers() {
     return Collections.singletonList(new ContentParserParametersImpl());
   }
 
   /**
-   * 重写此方法可以返回指定的响应内容转换器集合，有默认配置
+   * 重写此方法覆盖默认的配置
    *
-   * @return 响应内容转换器集合
+   * @return 返回请求响应结果转换器集合
    */
   protected Collection<ResultParser> getResultParsers() {
-    ObjectMapper jacksonObjectMapper = new ObjectMapper();
-    jacksonObjectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    jacksonObjectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-    jacksonObjectMapper.setPropertyNamingStrategy(SNAKE_CASE);
-    return Collections.singletonList(new ResultParserJsonImpl(jacksonObjectMapper));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
+    ResultParser resultParser = new ResultParserJsonImpl(objectMapper);
+    return Collections.singletonList(resultParser);
   }
 
-  @Override
-  public final void processAuthorizationCode(String authorizationCode) throws AuthorizationException {
-    if (StringUtils.isBlank(authorizationCode)) {
-      throw new AuthorizationException("Could not process blank or null authorization code");
-    }
-    AccessToken accessToken = getAccessToken(authorizationCode);
-    if (Objects.nonNull(accessToken)) {
-      try {
-        addNewAccessToken(accessToken);
-      } catch (AccessTokenManagerException | InvalidAccessTokenException e) {
-        throw new AuthorizationException("Could not process authorization code " + authorizationCode, e);
-      }
-    }
+  /**
+   * 调用此方法返回店铺的访问令牌
+   *
+   * @param shopId 店铺编号不能为空
+   * @return 访问令牌不能为空
+   * @throws AccessTokenStoreException 无法查询访问令牌
+   */
+  protected AccessToken findAccessToken(String shopId) throws AccessTokenStoreException {
+    return accessTokenStore.findByShopId(shopId);
   }
 
-  @Override
-  public final void addNewAccessToken(AccessToken accessToken) throws AccessTokenManagerException, InvalidAccessTokenException {
-    accessTokenManager.addNewAccessToken(accessToken);
-  }
-
-  @Override
-  public final void deleteAccessToken(String shopId) throws AccessTokenManagerException {
-    accessTokenManager.deleteAccessToken(shopId);
-  }
-
-  @Override
-  public final AccessToken findAccessToken(String shopId) throws AccessTokenManagerException {
-    return accessTokenManager.findAccessToken(shopId);
-  }
-
-  @Override
-  public final void shutdown() throws AccessTokenManagerException {
-    accessTokenManager.shutdown();
-  }
-
+  /**
+   * 执行接口请求
+   *
+   * @param content 请求内容不能为空
+   * @param <R> 请求响应结果类型
+   * @return 请求响应结果不能为空
+   * @throws RequestExecutorException 执行接口请求的过程发生异常
+   */
   @Override
   public final <R extends Result> R execute(Content<R> content) throws RequestExecutorException {
     return requestExecutor.execute(content);
   }
 
+  /**
+   * 执行接口请求
+   *
+   * @param content 请求内容不能为空
+   * @param accessToken 访问令牌，可以为空
+   * @param <R> 请求响应结果类型
+   * @return 请求响应结果不能为空
+   * @throws RequestExecutorException 执行接口请求的过程发生异常
+   */
   @Override
   public final <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException {
     return requestExecutor.execute(content, accessToken);
   }
 
+  /**
+   * 执行接口请求
+   *
+   * @param content 请求内容不能为空
+   * @param urlValues 请求链接地址中的参数值
+   * @param <R> 请求响应结果类型
+   * @return 请求响应结果不能为空
+   * @throws RequestExecutorException 执行接口请求的过程发生异常
+   */
   @Override
   public final <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException {
     return requestExecutor.execute(content, urlValues);
   }
 
+  /**
+   * 执行接口请求
+   *
+   * @param content 请求内容不能为空
+   * @param accessToken 访问令牌，可以为空
+   * @param urlValues 请求链接地址中的参数值
+   * @param <R> 请求响应结果类型
+   * @return 请求响应结果不能为空
+   * @throws RequestExecutorException 执行接口请求的过程发生异常
+   */
   @Override
   public final <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException {
     return requestExecutor.execute(content, accessToken, urlValues);
   }
 
+  /**
+   * 执行接口请求，不会使用请求内容转换器，也不会使用请求响应结果转换器
+   *
+   * @param requestContent 请求内容不能为空
+   * @return 请求响应结果不能为空
+   * @throws RequestExecutorException 执行接口请求的过程发生异常
+   */
   @Override
   public final ResponseContent execute(RequestContent requestContent) throws RequestExecutorException {
     return requestExecutor.execute(requestContent);
   }
 
+  /**
+   * 关闭方法，子类如果需要重写此方法，请先调用此方法
+   *
+   * @throws IOException 关闭发生异常
+   */
   @Override
-  public final void close() throws IOException {
+  public void close() throws IOException {
     requestExecutor.close();
   }
-
-  @Override
-  public final void shutdownAndClose() {
-    try {
-      shutdown();
-    } catch (AccessTokenManagerException e) {
-      // 关闭访问令牌管理器的功能发生异常
-    }
-    try {
-      close();
-    } catch (IOException e) {
-      // 关闭请求执行器的时候发生异常
-    }
-  }
-
-  /**
-   * 实现此方法用于通过授权码获取访问令牌
-   *
-   * @param authorizationCode 授权码不能为空
-   * @return 访问令牌不能为空
-   * @throws AuthorizationException 处理授权码过程发生异常
-   */
-  protected abstract AccessToken getAccessToken(String authorizationCode) throws AuthorizationException;
-
-  /**
-   * 实现此方法用于刷新访问令牌
-   *
-   * @param oldAccessToken 旧的访问令牌不能为空
-   * @return 新的访问令牌不能为空
-   * @throws AccessTokenRefreshException 刷新访问令牌异常
-   */
-  protected abstract AccessToken refreshAccessToken(AccessToken oldAccessToken) throws AccessTokenRefreshException;
 }

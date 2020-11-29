@@ -1,36 +1,36 @@
 package me.gaigeshen.doudian.client;
 
-import me.gaigeshen.doudian.authorization.AccessTokenManager;
-import me.gaigeshen.doudian.authorization.AccessTokenManagerException;
-import me.gaigeshen.doudian.authorization.AuthorizationFlow;
-import me.gaigeshen.doudian.request.RequestExecutor;
+import me.gaigeshen.doudian.authorization.AccessToken;
 
-import java.io.IOException;
+import java.io.Closeable;
 
 /**
- * 抖店接口客户端，同时也是访问令牌管理器和请求执行器
+ * 抖店开放平台接口，此接口仅包含授权相关的方法
  *
  * @author gaigeshen
  */
-public interface DoudianClient extends AuthorizationFlow, AccessTokenManager, RequestExecutor {
+public interface DoudianClient extends Closeable {
   /**
-   * 调用此方法仅仅尝试关闭访问令牌管理器的功能
+   * 返回授权链接地址，授权者访问此地址开始授权过程
    *
-   * @throws AccessTokenManagerException 关闭访问令牌管理器的时候发生异常
+   * @param redirectUri 授权回调链接地址，授权者将被重定向到此地址并携带授权码
+   * @return 授权链接地址
    */
-  @Override
-  void shutdown() throws AccessTokenManagerException;
+  String getAuthorizeUrl(String redirectUri);
 
   /**
-   * 调用此方法仅仅尝试关闭请求执行器的功能
+   * 通过授权码获取访问令牌
    *
-   * @throws IOException 关闭请求执行器的时候发生异常
+   * @param authorizationCode 授权码不能为空
+   * @return 访问令牌不能为空
    */
-  @Override
-  void close() throws IOException;
+  AccessToken getAccessToken(String authorizationCode);
 
   /**
-   * 调用此方法将尝试关闭访问令牌管理器的功能以及请求执行器的功能，不抛出任何异常
+   * 通过旧的访问令牌刷新访问令牌
+   *
+   * @param oldAccessToken 旧的访问令牌
+   * @return 新的访问令牌不能为空
    */
-  void shutdownAndClose();
+  AccessToken getAccessToken(AccessToken oldAccessToken);
 }

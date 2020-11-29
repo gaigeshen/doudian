@@ -1,6 +1,5 @@
 package me.gaigeshen.doudian.authorization;
 
-import me.gaigeshen.doudian.util.Asserts;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
@@ -12,30 +11,12 @@ import java.util.Objects;
  */
 public abstract class AbstractAuthorizationFlow implements AuthorizationFlow {
 
-  private final String authorizeUrl;
-
-  private final AccessTokenManager accessTokenManager;
-
-  /**
-   * 创建此类对象
-   *
-   * @param authorizeUrl 完整的授权链接
-   * @param accessTokenManager 访问令牌管理器，只用于添加获取到的访问令牌
-   */
-  protected AbstractAuthorizationFlow(String authorizeUrl, AccessTokenManager accessTokenManager) {
-    Asserts.notBlank(authorizeUrl, "authorizeUrl");
-    Asserts.notNull(accessTokenManager, "accessTokenManager");
-    this.authorizeUrl = authorizeUrl;
-    this.accessTokenManager = accessTokenManager;
-  }
-
-  @Override
-  public final String getAuthorizeUrl() {
-    return authorizeUrl;
-  }
-
   @Override
   public final void processAuthorizationCode(String authorizationCode) throws AuthorizationException {
+    AccessTokenManager accessTokenManager = getAccessTokenManager();
+    if (Objects.isNull(accessTokenManager)) {
+      throw new AuthorizationException("No current access token manager");
+    }
     if (StringUtils.isBlank(authorizationCode)) {
       throw new AuthorizationException("Could not process blank or null authorization code");
     }
@@ -49,6 +30,13 @@ public abstract class AbstractAuthorizationFlow implements AuthorizationFlow {
       throw new AuthorizationException("Could not process authorization code " + authorizationCode, e);
     }
   }
+
+  /**
+   * 返回访问令牌管理器
+   *
+   * @return 访问令牌管理器不能为空
+   */
+  protected abstract AccessTokenManager getAccessTokenManager();
 
   /**
    * 实现此方法用于通过授权码获取访问令牌
