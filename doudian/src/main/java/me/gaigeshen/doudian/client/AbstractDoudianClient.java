@@ -89,7 +89,7 @@ public abstract class AbstractDoudianClient implements DoudianClient, RequestExe
    * 调用此方法返回店铺的访问令牌
    *
    * @param shopId 店铺编号不能为空
-   * @return 访问令牌不能为空
+   * @return 访问令牌可能为空
    * @throws AccessTokenStoreException 无法查询访问令牌
    */
   protected AccessToken findAccessToken(String shopId) throws AccessTokenStoreException {
