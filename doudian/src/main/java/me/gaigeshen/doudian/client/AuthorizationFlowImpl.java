@@ -42,15 +42,11 @@ public class AuthorizationFlowImpl extends AbstractAuthorizationFlow {
 
   @Override
   protected AccessToken getAccessToken(String authorizationCode) throws AuthorizationException {
-    try {
-      return doudianClient.getAccessToken(authorizationCode);
-    } catch (Exception e) {
-      throw new AuthorizationException(e);
-    }
+    return null;
   }
 
   @Override
   public String getAuthorizeUrl() {
-    return doudianClient.getAuthorizeUrl(redirectUri);
+    return null;
   }
 }
