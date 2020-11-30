@@ -15,6 +15,7 @@ import me.gaigeshen.doudian.request.content.parser.ContentParserParametersImpl;
 import me.gaigeshen.doudian.request.result.Result;
 import me.gaigeshen.doudian.request.result.parser.ResultParser;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
+import me.gaigeshen.doudian.util.Asserts;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,7 +27,7 @@ import java.util.Collections;
  *
  * @author gaigeshen
  */
-public abstract class AbstractDoudianClient implements DoudianClient, RequestExecutor {
+public abstract class AbstractDoudianClient implements DoudianClient {
 
   private final AccessTokenStore accessTokenStore;
 
@@ -55,6 +56,8 @@ public abstract class AbstractDoudianClient implements DoudianClient, RequestExe
    * @param webClientConfig 用于接口请求客户端的配置不能为空
    */
   protected AbstractDoudianClient(AccessTokenStore accessTokenStore, WebClientConfig webClientConfig) {
+    Asserts.notNull(accessTokenStore, "accessTokenStore");
+    Asserts.notNull(webClientConfig, "webClientConfig");
     this.accessTokenStore = accessTokenStore;
     this.requestExecutor = RequestExecutorImpl.create(webClientConfig, getContentParsers(), getResultParsers());
   }

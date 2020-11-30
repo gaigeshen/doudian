@@ -1,15 +1,14 @@
 package me.gaigeshen.doudian.client;
 
 import me.gaigeshen.doudian.authorization.AccessToken;
-
-import java.io.Closeable;
+import me.gaigeshen.doudian.request.RequestExecutor;
 
 /**
  * 抖店开放平台接口，此接口仅包含授权相关的方法
  *
  * @author gaigeshen
  */
-public interface DoudianClient extends Closeable {
+public interface DoudianClient extends RequestExecutor {
   /**
    * 返回授权链接地址，授权者访问此地址开始授权过程
    *
@@ -32,5 +31,5 @@ public interface DoudianClient extends Closeable {
    * @param oldAccessToken 旧的访问令牌
    * @return 新的访问令牌不能为空
    */
-  AccessToken getAccessToken(AccessToken oldAccessToken);
+  AccessToken refreshAccessToken(AccessToken oldAccessToken);
 }
