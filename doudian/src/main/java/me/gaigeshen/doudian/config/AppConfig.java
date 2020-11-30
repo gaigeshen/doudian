@@ -1,6 +1,6 @@
 package me.gaigeshen.doudian.config;
 
-import org.apache.commons.lang3.StringUtils;
+import me.gaigeshen.doudian.util.Asserts;
 
 /**
  * 应用配置
@@ -12,11 +12,8 @@ public class AppConfig {
   private final String appSecret;
 
   public AppConfig(String appKey, String appSecret) {
-    if (StringUtils.isBlank(appKey) || StringUtils.isBlank(appSecret)) {
-      throw new IllegalArgumentException("appKey and appSecret cannot be null or blank");
-    }
-    this.appKey = appKey;
-    this.appSecret = appSecret;
+    this.appKey = Asserts.notBlank(appKey, "appKey");
+    this.appSecret = Asserts.notBlank(appSecret, "appSecret");
   }
 
   /**
