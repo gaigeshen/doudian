@@ -2,10 +2,7 @@ package me.gaigeshen.doudian.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import me.gaigeshen.doudian.authorization.AccessToken;
-import me.gaigeshen.doudian.authorization.AccessTokenStore;
-import me.gaigeshen.doudian.authorization.AccessTokenStoreException;
-import me.gaigeshen.doudian.authorization.AccessTokenStoreImpl;
+import me.gaigeshen.doudian.authorization.*;
 import me.gaigeshen.doudian.http.RequestContent;
 import me.gaigeshen.doudian.http.ResponseContent;
 import me.gaigeshen.doudian.http.WebClientConfig;
@@ -86,14 +83,15 @@ public abstract class AbstractDoudianClient implements DoudianClient, RequestExe
   }
 
   /**
-   * 调用此方法返回店铺的访问令牌
+   * 查询访问令牌
    *
    * @param shopId 店铺编号不能为空
-   * @return 访问令牌可能为空
+   * @return 访问令牌
    * @throws AccessTokenStoreException 无法查询访问令牌
+   * @throws AccessTokenNotFoundException 未查询到访问令牌
    */
-  protected AccessToken findAccessToken(String shopId) throws AccessTokenStoreException {
-    return accessTokenStore.findByShopId(shopId);
+  protected AccessToken findAccessToken(String shopId) throws AccessTokenStoreException, AccessTokenNotFoundException {
+    return accessTokenStore.findByShopId(shopId, true);
   }
 
   /**

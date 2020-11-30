@@ -1,6 +1,7 @@
 package me.gaigeshen.doudian.authorization;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 访问令牌存储器
@@ -33,6 +34,23 @@ public interface AccessTokenStore {
    * @throws AccessTokenStoreException 无法查询访问令牌
    */
   AccessToken findByShopId(String shopId) throws AccessTokenStoreException;
+
+  /**
+   * 查询访问令牌
+   *
+   * @param shopId 店铺编号不能为空
+   * @param required 返回的访问令牌是否必须，如果是必须的且未查询到访问令牌则会抛出异常
+   * @return 访问令牌可能为空，如果返回的令牌不是必须的话
+   * @throws AccessTokenStoreException 无法查询访问令牌
+   * @throws AccessTokenNotFoundException 未查询到访问令牌，如果返回的访问令牌是必须的话
+   */
+  default AccessToken findByShopId(String shopId, boolean required) throws AccessTokenStoreException, AccessTokenNotFoundException {
+    AccessToken accessToken = findByShopId(shopId);
+    if (required && Objects.isNull(accessToken)) {
+      throw new AccessTokenNotFoundException("Could not find access token with shop id " + shopId);
+    }
+    return accessToken;
+  }
 
   /**
    * 查询所有的访问令牌
