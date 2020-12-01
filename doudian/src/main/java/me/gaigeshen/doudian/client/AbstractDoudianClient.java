@@ -3,10 +3,7 @@ package me.gaigeshen.doudian.client;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import me.gaigeshen.doudian.authorization.AccessToken;
-import me.gaigeshen.doudian.authorization.AccessTokenNotFoundException;
 import me.gaigeshen.doudian.authorization.AccessTokenStore;
-import me.gaigeshen.doudian.authorization.AccessTokenStoreException;
 import me.gaigeshen.doudian.config.AppConfig;
 import me.gaigeshen.doudian.http.RequestContent;
 import me.gaigeshen.doudian.http.ResponseContent;
@@ -49,6 +46,14 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     return accessTokenStore;
   }
 
+  protected ResponseContent execute(RequestContent requestContent) throws ExecutionException {
+    try {
+      return requestExecutor.execute(requestContent);
+    } catch (RequestExecutorException e) {
+      throw new ExecutionException(e);
+    }
+  }
+
   protected <R extends Result> R execute(Content<R> content) throws ExecutionException {
     try {
       return requestExecutor.execute(content);
@@ -57,24 +62,28 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     }
   }
 
-  protected <R extends Result> R execute(Content<R> content, String shopId) throws ExecutionException {
+  protected <R extends Result> R execute(Content<R> content, String accessToken) throws ExecutionException {
     try {
-      AccessToken accessToken = accessTokenStore.findByShopId(shopId, true);
-      return requestExecutor.execute(content, accessToken.getAccessToken());
-    } catch (AccessTokenStoreException | AccessTokenNotFoundException | RequestExecutorException e) {
-      if (e instanceof AccessTokenNotFoundException) {
-        throw new NoAccessTokenException(e).setContent(content).setShopId(shopId);
-      }
-      throw new ExecutionException(e).setContent(content).setShopId(shopId);
+      return requestExecutor.execute(content, accessToken);
+    } catch (RequestExecutorException e) {
+      throw new ExecutionException(e).setContent(content);
     }
   }
 
-  protected ResponseContent execute(RequestContent requestContent) throws ExecutionException {
-    try {
-      return requestExecutor.execute(requestContent);
-    } catch (RequestExecutorException e) {
-      throw new ExecutionException(e);
+  protected <D> D execute(DoudianContent<D> content) throws ExecutionException {
+    DoudianResult<D> result = execute((Content<DoudianResult<D>>) content);
+    if (result.failed()) {
+      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
+    return result.getData();
+  }
+
+  protected <D> D execute(DoudianContent<D> content, String accessToken) throws ExecutionException {
+    DoudianResult<D> result = execute((Content<DoudianResult<D>>) content, accessToken);
+    if (result.failed()) {
+      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+    }
+    return result.getData();
   }
 
   @Override

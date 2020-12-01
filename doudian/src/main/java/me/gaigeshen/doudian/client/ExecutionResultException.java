@@ -6,19 +6,19 @@ import me.gaigeshen.doudian.request.result.Result;
 /**
  * @author gaigeshen
  */
-public class NoAccessTokenException extends ExecutionException {
-  public NoAccessTokenException(String message) {
+public class ExecutionResultException extends ExecutionException {
+  public ExecutionResultException(String message) {
     super(message);
   }
-  public NoAccessTokenException(String message, Throwable cause) {
+  public ExecutionResultException(String message, Throwable cause) {
     super(message, cause);
   }
-  public NoAccessTokenException(Throwable cause) {
+  public ExecutionResultException(Throwable cause) {
     super(cause);
   }
 
   @Override
-  public NoAccessTokenException setContent(Content<?> content) {
+  public ExecutionResultException setContent(Content<?> content) {
     super.setContent(content);
     return this;
   }
