@@ -24,8 +24,10 @@ public class ContentHelper {
     if (Objects.isNull(metadataAttributes)) {
       return null;
     }
+    // Use url() or value()
+    String url = StringUtils.defaultIfBlank(metadataAttributes.url(), metadataAttributes.value());
     return Metadata.create()
-            .setUrl(metadataAttributes.url()).setMethod(metadataAttributes.method())
+            .setUrl(url).setMethod(metadataAttributes.method())
             .setRequireAccessToken(metadataAttributes.requireAccessToken())
             .setType(metadataAttributes.type())
             .build();

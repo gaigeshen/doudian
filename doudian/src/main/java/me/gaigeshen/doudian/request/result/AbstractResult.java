@@ -13,10 +13,20 @@ public interface AbstractResult<D> extends Result {
 
   /**
    * Returns {@code true} if the code equals {@link #DEFAULT_SUCCESS_CODE}
+   *
    * @return Returns {@code true} if this result is successful
    */
-  default boolean isSuccessResult() {
+  default boolean successful() {
     return DEFAULT_SUCCESS_CODE.equals(getCode());
+  }
+
+  /**
+   * Returns {@code true} if the code not equals {@link #DEFAULT_SUCCESS_CODE}
+   *
+   * @return Returns {@code true} if this result is failed
+   */
+  default boolean failed() {
+    return !successful();
   }
 
   /**

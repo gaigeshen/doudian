@@ -3,42 +3,29 @@ package me.gaigeshen.doudian.client;
 import me.gaigeshen.doudian.request.result.AbstractResult;
 
 /**
- * 抖店请求响应结果
  *
  * @author gaigeshen
  */
 public class DoudianResult<D> implements AbstractResult<D> {
 
-  private Integer errNo; // 异常码
+  public Integer errNo;
 
-  private String message; // 消息内容
+  public String message;
 
-  private D data; // 数据部分
+  public D data;
 
   @Override
-  public final Integer getCode() {
+  public Integer getCode() {
     return errNo;
   }
 
   @Override
-  public final String getMessage() {
+  public String getMessage() {
     return message;
   }
 
   @Override
-  public final D getData() {
+  public D getData() {
     return data;
-  }
-
-  public void setErrNo(Integer errNo) {
-    this.errNo = errNo;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public void setData(D data) {
-    this.data = data;
   }
 }

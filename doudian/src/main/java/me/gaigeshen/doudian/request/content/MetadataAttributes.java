@@ -13,6 +13,14 @@ import static me.gaigeshen.doudian.request.content.Metadata.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface MetadataAttributes {
+
+  /**
+   * Alias for {@link #url()}, url is not blank, uses the url
+   *
+   * @return The value for {@link #url()}
+   */
+  String value() default "";
+
   /**
    * Returns request url, support string template url, use {@link String#format(String, Object...)} internal
    *
