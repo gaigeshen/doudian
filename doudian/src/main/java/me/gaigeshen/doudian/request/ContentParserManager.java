@@ -18,7 +18,7 @@ class ContentParserManager {
   /**
    * Create {@link ContentParserManager} with {@link ContentParser}s
    *
-   * @param parsers The {@link ContentParser}s
+   * @param parsers The {@link ContentParser}s can be null
    */
   public ContentParserManager(Collection<ContentParser> parsers) {
     if (Objects.nonNull(parsers)) {
@@ -29,7 +29,7 @@ class ContentParserManager {
   /**
    * Create {@link ContentParserManager} with {@link ContentParser}s
    *
-   * @param parsers The {@link ContentParser}s
+   * @param parsers The {@link ContentParser}s can be null
    */
   public ContentParserManager(ContentParser... parsers) {
     this(Objects.nonNull(parsers) ? Arrays.asList(parsers) : null);

@@ -21,7 +21,7 @@ class ResultParserManager {
   /**
    * Create {@link ResultParserManager} with {@link ResultParser}s
    *
-   * @param parsers The {@link ResultParser}s
+   * @param parsers The {@link ResultParser}s can be null
    */
   public ResultParserManager(Collection<ResultParser> parsers) {
     if (Objects.nonNull(parsers)) {
@@ -32,7 +32,7 @@ class ResultParserManager {
   /**
    * Create {@link ResultParserManager} with {@link ResultParser}s
    *
-   * @param parsers The {@link ResultParser}s
+   * @param parsers The {@link ResultParser}s can be null
    */
   public ResultParserManager(ResultParser... parsers) {
     this(Objects.nonNull(parsers) ? Arrays.asList(parsers) : null);

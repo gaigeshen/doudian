@@ -52,8 +52,8 @@ public class RequestExecutorImpl implements RequestExecutor {
    * Create request executor with {@link WebClientConfig}, {@link ContentParser}s and {@link ResultParser}s
    *
    * @param config Web client configuration for create {@link WebClient}, cannot be null
-   * @param contentParsers The content parsers, cannot be null
-   * @param resultParsers The result parsers, cannot be null
+   * @param contentParsers The content parsers, can be null
+   * @param resultParsers The result parsers, can be null
    * @return Request executor
    */
   public static RequestExecutorImpl create(WebClientConfig config, Collection<ContentParser> contentParsers, Collection<ResultParser> resultParsers) {
