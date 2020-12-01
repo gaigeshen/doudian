@@ -1,6 +1,5 @@
 package me.gaigeshen.doudian.http;
 
-import me.gaigeshen.doudian.util.Asserts;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
@@ -52,10 +51,25 @@ public class WebClient implements Closeable {
   private final CloseableHttpClient client;
 
   /**
-   * Create web client with default configuration
+   * Create web client with default configuration, see {@link WebClientConfig#getDefault()}
+   *
+   * @return The web client
    */
-  public WebClient() {
-    this(WebClientConfig.getDefault());
+  public static WebClient create() {
+    return create(WebClientConfig.getDefault());
+  }
+
+  /**
+   * Create web client with configuration
+   *
+   * @param webClientConfig Configuration cannot be null
+   * @return The web client
+   */
+  public static WebClient create(WebClientConfig webClientConfig) {
+    if (Objects.isNull(webClientConfig)) {
+      throw new IllegalArgumentException("webClientConfig cannot be null");
+    }
+    return new WebClient(webClientConfig);
   }
 
   /**
@@ -63,8 +77,7 @@ public class WebClient implements Closeable {
    *
    * @param webClientConfig Configuration cannot be null
    */
-  public WebClient(WebClientConfig webClientConfig) {
-    Asserts.notNull(webClientConfig, "webClientConfig");
+  private WebClient(WebClientConfig webClientConfig) {
     RequestConfig config = RequestConfig.custom()
             .setConnectionRequestTimeout(webClientConfig.getConnectionRequestTimeout())
             .setConnectTimeout(webClientConfig.getConnectTimeout())

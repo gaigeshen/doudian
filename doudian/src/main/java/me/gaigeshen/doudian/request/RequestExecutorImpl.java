@@ -1,7 +1,9 @@
 package me.gaigeshen.doudian.request;
 
 import me.gaigeshen.doudian.http.*;
-import me.gaigeshen.doudian.request.content.*;
+import me.gaigeshen.doudian.request.content.Content;
+import me.gaigeshen.doudian.request.content.ContentHelper;
+import me.gaigeshen.doudian.request.content.ContentMetadataException;
 import me.gaigeshen.doudian.request.content.parser.*;
 import me.gaigeshen.doudian.request.result.Result;
 import me.gaigeshen.doudian.request.result.parser.ResultParser;
@@ -9,24 +11,18 @@ import me.gaigeshen.doudian.request.result.parser.ResultParserException;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
 import me.gaigeshen.doudian.util.Asserts;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
 
 /**
- * Request executor use {@link WebClient} internal, call {@link #close()} method to close this web client,
- * execute with {@link RequestContent} and returns {@link ResponseContent},
+ * Request executor use {@link WebClient} internal,
+ * call {@link #close()} method to close this web client, execute
+ * with {@link RequestContent} and returns {@link ResponseContent},
  * can also execute with {@link Content} and returns {@link Result},
  * parse the content to {@link RequestContent} use {@link ContentParser}s,
  * parse the response content to {@link Result} use {@link ResultParser}s
  *
  * @author gaigeshen
- * @see WebClient
- * @see RequestContent
- * @see ResponseContent
- * @see Content
- * @see Result
- * @see Closeable
  */
 public class RequestExecutorImpl implements RequestExecutor {
 
@@ -61,7 +57,7 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @return Request executor
    */
   public static RequestExecutorImpl create(WebClientConfig config, Collection<ContentParser> contentParsers, Collection<ResultParser> resultParsers) {
-    return new RequestExecutorImpl(new WebClient(config), new ContentParserManager(contentParsers), new ResultParserManager(resultParsers));
+    return new RequestExecutorImpl(WebClient.create(config), new ContentParserManager(contentParsers), new ResultParserManager(resultParsers));
   }
 
   /**
@@ -82,7 +78,7 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @return Request executor
    */
   public static RequestExecutorImpl create(WebClientConfig config) {
-    return new RequestExecutorImpl(new WebClient(config), ContentParserManager.createDefault(), ResultParserManager.createDefault());
+    return new RequestExecutorImpl(WebClient.create(config), ContentParserManager.createDefault(), ResultParserManager.createDefault());
   }
 
   /**
@@ -92,7 +88,7 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @return Request executor
    */
   public static RequestExecutorImpl create() {
-    return new RequestExecutorImpl(new WebClient(WebClientConfig.getDefault()), ContentParserManager.createDefault(), ResultParserManager.createDefault());
+    return new RequestExecutorImpl(WebClient.create(), ContentParserManager.createDefault(), ResultParserManager.createDefault());
   }
 
   @Override

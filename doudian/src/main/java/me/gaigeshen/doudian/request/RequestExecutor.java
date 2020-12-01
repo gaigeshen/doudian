@@ -6,6 +6,7 @@ import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.result.Result;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * Request executor, execute with {@link RequestContent} and returns {@link ResponseContent},
@@ -67,4 +68,11 @@ public interface RequestExecutor extends Closeable {
    */
   ResponseContent execute(RequestContent requestContent) throws RequestExecutorException;
 
+  /**
+   * Close this request executor
+   *
+   * @throws IOException Could not be closed
+   */
+  @Override
+  void close() throws IOException;
 }
