@@ -46,7 +46,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     return accessTokenStore;
   }
 
-  protected ResponseContent execute(RequestContent requestContent) throws ExecutionException {
+  protected ResponseContent executeInternal(RequestContent requestContent) throws ExecutionException {
     try {
       return requestExecutor.execute(requestContent);
     } catch (RequestExecutorException e) {
@@ -54,7 +54,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     }
   }
 
-  protected <R extends Result> R execute(Content<R> content) throws ExecutionException {
+  protected <R extends Result> R executeInternal(Content<R> content) throws ExecutionException {
     try {
       return requestExecutor.execute(content);
     } catch (RequestExecutorException e) {
@@ -62,7 +62,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     }
   }
 
-  protected <R extends Result> R execute(Content<R> content, String accessToken) throws ExecutionException {
+  protected <R extends Result> R executeInternal(Content<R> content, String accessToken) throws ExecutionException {
     try {
       return requestExecutor.execute(content, accessToken);
     } catch (RequestExecutorException e) {
@@ -71,7 +71,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
   }
 
   protected <D> D execute(DoudianContent<D> content) throws ExecutionException {
-    DoudianResult<D> result = execute((Content<DoudianResult<D>>) content);
+    DoudianResult<D> result = executeInternal(content);
     if (result.failed()) {
       throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
@@ -79,7 +79,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
   }
 
   protected <D> D execute(DoudianContent<D> content, String accessToken) throws ExecutionException {
-    DoudianResult<D> result = execute((Content<DoudianResult<D>>) content, accessToken);
+    DoudianResult<D> result = executeInternal(content, accessToken);
     if (result.failed()) {
       throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
