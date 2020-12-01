@@ -15,12 +15,10 @@ import me.gaigeshen.doudian.request.RequestExecutorImpl;
 import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.content.parser.ContentParser;
 import me.gaigeshen.doudian.request.content.parser.ContentParserParametersImpl;
-import me.gaigeshen.doudian.request.result.AbstractResult;
 import me.gaigeshen.doudian.request.result.Result;
 import me.gaigeshen.doudian.request.result.parser.ResultParser;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
 import me.gaigeshen.doudian.util.Asserts;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -67,13 +65,6 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     return Collections.singletonList(new ResultParserJsonImpl(objectMapper));
-  }
-
-  protected <D> D extractResultData(AbstractResult<D> result) {
-    if (!result.isSuccessResult()) {
-      throw new DoudianClientException(StringUtils.defaultIfBlank(result.getMessage(), "Result failed"));
-    }
-    return result.getData();
   }
 
   @Override
