@@ -73,7 +73,7 @@ public class RequestContentImpl implements RequestContent {
   }
 
   /**
-   * eturns builder for build request content object, build multipart type request content
+   * Returns builder for build request content object, build multipart type request content
    *
    * @param multipartParameters Multipart parameters value
    * @return The builder
