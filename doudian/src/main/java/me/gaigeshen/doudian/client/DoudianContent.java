@@ -1,12 +1,17 @@
 package me.gaigeshen.doudian.client;
 
+import me.gaigeshen.doudian.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
+import me.gaigeshen.doudian.request.content.MetadataAttributes;
 
 /**
- * Content object class contains all fields, returns {@link DoudianResult} after executed
+ * 抖店请求数据内容
  *
  * @author gaigeshen
  */
+@MetadataAttributes(
+        url = Constants.API_URL
+)
 public class DoudianContent<D> extends AbstractContent<DoudianResult<D>> {
 
   private final String method;

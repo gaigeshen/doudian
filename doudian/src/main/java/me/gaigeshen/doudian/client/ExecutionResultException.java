@@ -4,6 +4,8 @@ import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.result.Result;
 
 /**
+ * 抖店客户端请求执行结果异常，用于表达成功执行请求之后的业务结果异常
+ *
  * @author gaigeshen
  */
 public class ExecutionResultException extends ExecutionException {
@@ -24,7 +26,7 @@ public class ExecutionResultException extends ExecutionException {
   }
 
   @Override
-  public ExecutionException setResult(Result result) {
+  public ExecutionResultException setResult(Result result) {
     super.setResult(result);
     return this;
   }

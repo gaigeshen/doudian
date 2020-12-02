@@ -1,6 +1,8 @@
 package me.gaigeshen.doudian.client;
 
 /**
+ * 抖店客户端异常
+ *
  * @author gaigeshen
  */
 public class DoudianClientException extends Exception {

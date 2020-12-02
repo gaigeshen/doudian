@@ -4,6 +4,8 @@ import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.result.Result;
 
 /**
+ * 抖店客户端请求执行异常，具体表达当前没有访问令牌造成的异常
+ *
  * @author gaigeshen
  */
 public class NoAccessTokenException extends ExecutionException {

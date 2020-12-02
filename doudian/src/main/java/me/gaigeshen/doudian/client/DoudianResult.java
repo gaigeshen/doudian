@@ -3,7 +3,7 @@ package me.gaigeshen.doudian.client;
 import me.gaigeshen.doudian.request.result.AbstractResult;
 
 /**
- * Result object class contains data
+ * 抖店请求执行结果
  *
  * @author gaigeshen
  */
@@ -16,9 +16,9 @@ public class DoudianResult<D> implements AbstractResult<D> {
   private D data;
 
   /**
-   * Returns result code, see {@link #setErrNo(Integer)}
+   * 返回抖店请求执行结果异常码
    *
-   * @return The result code
+   * @return 抖店请求执行结果异常码
    */
   @Override
   public Integer getCode() {
@@ -26,9 +26,9 @@ public class DoudianResult<D> implements AbstractResult<D> {
   }
 
   /**
-   * Returns result message
+   * 返回抖店请求执行结果消息
    *
-   * @return The result message
+   * @return 抖店请求执行结果消息
    */
   @Override
   public String getMessage() {
@@ -36,9 +36,9 @@ public class DoudianResult<D> implements AbstractResult<D> {
   }
 
   /**
-   * Returns result data
+   * 返回抖店请求执行结果数据
    *
-   * @return The result data
+   * @return 抖店请求执行结果数据
    */
   @Override
   public D getData() {
@@ -46,27 +46,27 @@ public class DoudianResult<D> implements AbstractResult<D> {
   }
 
   /**
-   * Set result code, field name is errNo
+   * 设置抖店请求执行结果异常码
    *
-   * @param errNo The result code
+   * @param errNo 抖店请求执行结果异常码
    */
   public void setErrNo(Integer errNo) {
     this.errNo = errNo;
   }
 
   /**
-   * Set result message
+   * 设置抖店请求执行结果消息
    *
-   * @param message The result message
+   * @param message 抖店请求执行结果消息
    */
   public void setMessage(String message) {
     this.message = message;
   }
 
   /**
-   * Set result data
+   * 设置抖店请求执行结果数据
    *
-   * @param data The result data
+   * @param data 抖店请求执行结果数据
    */
   public void setData(D data) {
     this.data = data;
