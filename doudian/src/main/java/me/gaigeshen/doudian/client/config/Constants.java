@@ -1,4 +1,4 @@
-package me.gaigeshen.doudian.config;
+package me.gaigeshen.doudian.client.config;
 
 /**
  * 常量

@@ -1,4 +1,4 @@
-package me.gaigeshen.doudian.config;
+package me.gaigeshen.doudian.client.config;
 
 import me.gaigeshen.doudian.util.Asserts;
 
@@ -8,12 +8,22 @@ import me.gaigeshen.doudian.util.Asserts;
  * @author gaigeshen
  */
 public class AppConfig {
+
   private final String appKey;
+
   private final String appSecret;
 
+  /**
+   * 创建应用配置
+   *
+   * @param appKey 应用编号不能为空
+   * @param appSecret 应用密钥不能为空
+   */
   public AppConfig(String appKey, String appSecret) {
-    this.appKey = Asserts.notBlank(appKey, "appKey");
-    this.appSecret = Asserts.notBlank(appSecret, "appSecret");
+    Asserts.notBlank(appKey, "appKey");
+    Asserts.notBlank(appSecret, "appSecret");
+    this.appKey = appKey;
+    this.appSecret = appSecret;
   }
 
   /**

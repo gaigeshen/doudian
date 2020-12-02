@@ -1,6 +1,6 @@
 package me.gaigeshen.doudian.client;
 
-import me.gaigeshen.doudian.config.Constants;
+import me.gaigeshen.doudian.client.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
 import me.gaigeshen.doudian.request.content.MetadataAttributes;
 

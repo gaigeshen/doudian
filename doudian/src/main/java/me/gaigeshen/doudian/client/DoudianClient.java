@@ -1,7 +1,7 @@
 package me.gaigeshen.doudian.client;
 
 import me.gaigeshen.doudian.authorization.AccessTokenStore;
-import me.gaigeshen.doudian.config.AppConfig;
+import me.gaigeshen.doudian.client.config.AppConfig;
 import me.gaigeshen.doudian.http.WebClientConfig;
 
 /**

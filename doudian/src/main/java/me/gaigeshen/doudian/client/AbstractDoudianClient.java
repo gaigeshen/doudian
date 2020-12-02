@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import me.gaigeshen.doudian.authorization.AccessTokenStore;
-import me.gaigeshen.doudian.config.AppConfig;
+import me.gaigeshen.doudian.client.config.AppConfig;
 import me.gaigeshen.doudian.http.RequestContent;
 import me.gaigeshen.doudian.http.ResponseContent;
 import me.gaigeshen.doudian.http.WebClientConfig;
@@ -78,6 +78,26 @@ public abstract class AbstractDoudianClient implements DoudianClient {
    *
    * @param content 请求数据内容
    * @param accessToken 访问令牌是可以为空的
+   * @param urlValues 请求地址参数值
+   * @param <R> 请求执行结果类型
+   * @return 请求执行结果
+   * @throws ExecutionException 请求执行异常
+   */
+  protected <R extends Result> R executeInternal(Content<R> content, String accessToken, Object... urlValues) throws ExecutionException {
+    return executeInternal(executor -> {
+      try {
+        return executor.execute(content, accessToken, urlValues);
+      } catch (RequestExecutorException e) {
+        throw new ExecutionException(e).setContent(content);
+      }
+    });
+  }
+
+  /**
+   * 执行远程服务请求
+   *
+   * @param content 请求数据内容
+   * @param accessToken 访问令牌是可以为空的
    * @param <R> 请求执行结果类型
    * @return 请求执行结果
    * @throws ExecutionException 请求执行异常
@@ -86,6 +106,25 @@ public abstract class AbstractDoudianClient implements DoudianClient {
     return executeInternal(executor -> {
       try {
         return executor.execute(content, accessToken);
+      } catch (RequestExecutorException e) {
+        throw new ExecutionException(e).setContent(content);
+      }
+    });
+  }
+
+  /**
+   * 执行远程服务请求
+   *
+   * @param content 请求数据内容
+   * @param urlValues 请求地址参数值
+   * @param <R> 请求执行结果类型
+   * @return 请求执行结果
+   * @throws ExecutionException 请求执行异常
+   */
+  protected <R extends Result> R executeInternal(Content<R> content, Object... urlValues) throws ExecutionException {
+    return executeInternal(executor -> {
+      try {
+        return executor.execute(content, urlValues);
       } catch (RequestExecutorException e) {
         throw new ExecutionException(e).setContent(content);
       }
@@ -115,6 +154,25 @@ public abstract class AbstractDoudianClient implements DoudianClient {
    *
    * @param content 请求数据内容，此数据内容通过执行请求之后将返回抖店请求执行结果
    * @param accessToken 访问令牌是可以为空的
+   * @param urlValues 请求地址参数值
+   * @param <D> 抖店请求执行结果中的数据部分类型
+   * @return 抖店请求执行结果中的数据部分
+   * @throws ExecutionException 请求执行异常
+   * @throws ExecutionResultException 请求执行结果异常，可以认为请求执行业务结果是失败的
+   */
+  protected <D> D execute(AbstractContent<DoudianResult<D>> content, String accessToken, Object... urlValues) throws ExecutionException {
+    DoudianResult<D> result = executeInternal(content, accessToken, urlValues);
+    if (result.failed()) {
+      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+    }
+    return result.getData();
+  }
+
+  /**
+   * 执行远程服务请求，返回的请求执行结果类型为抖店请求执行结果
+   *
+   * @param content 请求数据内容，此数据内容通过执行请求之后将返回抖店请求执行结果
+   * @param accessToken 访问令牌是可以为空的
    * @param <D> 抖店请求执行结果中的数据部分类型
    * @return 抖店请求执行结果中的数据部分
    * @throws ExecutionException 请求执行异常
@@ -122,6 +180,24 @@ public abstract class AbstractDoudianClient implements DoudianClient {
    */
   protected <D> D execute(AbstractContent<DoudianResult<D>> content, String accessToken) throws ExecutionException {
     DoudianResult<D> result = executeInternal(content, accessToken);
+    if (result.failed()) {
+      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+    }
+    return result.getData();
+  }
+
+  /**
+   * 执行远程服务请求，返回的请求执行结果类型为抖店请求执行结果
+   *
+   * @param content 请求数据内容，此数据内容通过执行请求之后将返回抖店请求执行结果
+   * @param urlValues 请求地址参数值
+   * @param <D> 抖店请求执行结果中的数据部分类型
+   * @return 抖店请求执行结果中的数据部分
+   * @throws ExecutionException 请求执行异常
+   * @throws ExecutionResultException 请求执行结果异常，可以认为请求执行业务结果是失败的
+   */
+  protected <D> D execute(AbstractContent<DoudianResult<D>> content, Object... urlValues) throws ExecutionException {
+    DoudianResult<D> result = executeInternal(content, urlValues);
     if (result.failed()) {
       throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
