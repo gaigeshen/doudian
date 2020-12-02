@@ -62,7 +62,8 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   /**
    * Create request executor with {@link WebClientConfig}, default {@link ContentParser}s and default {@link ResultParser}s
-   * <br/><br/>
+   * <br>
+   * <br>
    * <strong>Default content parsers</strong>
    * <ol>
    *   <li>{@link ContentParserJsonImpl}</li>
