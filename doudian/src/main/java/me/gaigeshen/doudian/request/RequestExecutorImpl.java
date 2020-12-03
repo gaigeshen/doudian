@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,7 +55,26 @@ public class RequestExecutorImpl implements RequestExecutor {
     this.webClient = webClient;
     this.contentParserManager = contentParserManager;
     this.resultParserManager = resultParserManager;
-    this.listeners = new ArrayList<>();
+    this.listeners = new ArrayList<>(Collections.singleton(new LoggerRequestExecutorListener())); // Only logger listener
+  }
+
+  /**
+   * Add listener
+   *
+   * @param listener The listener
+   */
+  public void addListener(RequestExecutorListener listener) {
+    if (!listeners.contains(listener)) {
+      listeners.add(listener);
+    }
+  }
+
+  /**
+   * Remove all listeners
+   */
+  public void clearListeners() {
+    // Remove all listeners, exclude logger listener
+    listeners.removeIf(listener -> !(listener instanceof LoggerRequestExecutorListener));
   }
 
   /**
@@ -99,24 +119,6 @@ public class RequestExecutorImpl implements RequestExecutor {
    */
   public static RequestExecutorImpl create() {
     return new RequestExecutorImpl(WebClient.create(), ContentParserManager.createDefault(), ResultParserManager.createDefault());
-  }
-
-  /**
-   * Add listener
-   *
-   * @param listener The listener
-   */
-  public void addListener(RequestExecutorListener listener) {
-    if (!listeners.contains(listener)) {
-      listeners.add(listener);
-    }
-  }
-
-  /**
-   * Remove all listeners
-   */
-  public void clearListeners() {
-    listeners.clear();
   }
 
   @Override
@@ -274,5 +276,25 @@ public class RequestExecutorImpl implements RequestExecutor {
   @Override
   public void close() throws IOException {
     webClient.close();
+  }
+
+  /**
+   * Request executor listener just print by logger, for internal use only
+   *
+   * @author gaigeshen
+   */
+  private class LoggerRequestExecutorListener extends RequestExecutorListenerAdapter {
+    @Override
+    public void beforeContentParse(Content<?> content, String accessToken, Object... urlValues) {
+      LOGGER.info("Content: {}, Access token: {}, UrlValues: {}", content, accessToken, urlValues);
+    }
+    @Override
+    public void beforeExecute(RequestContent requestContent, Content<?> content) {
+      LOGGER.info("Request content: {}, Content: {}", requestContent, content);
+    }
+    @Override
+    public void afterExecute(RequestContent requestContent, ResponseContent responseContent, Content<?> content, Result result) {
+      LOGGER.info("Request content: {}, Response content: {}, Content: {}, Result: {}", requestContent, responseContent, content, result);
+    }
   }
 }
