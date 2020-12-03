@@ -1,6 +1,7 @@
 package me.gaigeshen.doudian.http;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpResponse;
@@ -263,6 +264,13 @@ public class WebClient implements Closeable {
       public InputStream getAsStream() {
         return content.asStream();
       }
+      @Override
+      public String toString() {
+        return new ToStringBuilder(this)
+                .append("type", getType()).append("charset", getCharset())
+                .append("size", getRawBytes().length)
+                .toString();
+      }
     };
   }
 
@@ -289,6 +297,8 @@ public class WebClient implements Closeable {
   }
 
   /**
+   * Default keep-alive strategy
+   *
    * @author gaigeshen
    */
   private static class KeepAliveStrategy implements ConnectionKeepAliveStrategy {
