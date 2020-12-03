@@ -10,9 +10,13 @@ import me.gaigeshen.doudian.request.result.parser.ResultParser;
 import me.gaigeshen.doudian.request.result.parser.ResultParserException;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
 import me.gaigeshen.doudian.util.Asserts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Request executor use {@link WebClient} internal,
@@ -26,11 +30,15 @@ import java.util.Collection;
  */
 public class RequestExecutorImpl implements RequestExecutor {
 
+  private final static Logger LOGGER = LoggerFactory.getLogger(RequestExecutorImpl.class);
+
   private final WebClient webClient; // Cannot be null
 
   private final ContentParserManager contentParserManager; // Cannot be null
 
   private final ResultParserManager resultParserManager; // Cannot be null
+
+  private final List<RequestExecutorListener> listeners; // Cannot be null
 
   /**
    * Internal constructor
@@ -46,6 +54,7 @@ public class RequestExecutorImpl implements RequestExecutor {
     this.webClient = webClient;
     this.contentParserManager = contentParserManager;
     this.resultParserManager = resultParserManager;
+    this.listeners = new ArrayList<>();
   }
 
   /**
@@ -92,36 +101,78 @@ public class RequestExecutorImpl implements RequestExecutor {
     return new RequestExecutorImpl(WebClient.create(), ContentParserManager.createDefault(), ResultParserManager.createDefault());
   }
 
+  /**
+   * Add listener
+   *
+   * @param listener The listener
+   */
+  public void addListener(RequestExecutorListener listener) {
+    if (!listeners.contains(listener)) {
+      listeners.add(listener);
+    }
+  }
+
+  /**
+   * Remove all listeners
+   */
+  public void clearListeners() {
+    listeners.clear();
+  }
+
   @Override
   public <R extends Result> R execute(Content<R> content) throws RequestExecutorException {
     RequestContent requestContent = parseRequestContent(content, null);
-    ResponseContent responseContent = execute(requestContent);
-    return parseResult(responseContent, content.getResultClass());
+    ResponseContent responseContent = execute(requestContent, content);
+    R result = parseResult(responseContent, content.getResultClass());
+    afterExecute(requestContent, responseContent, content, result);
+    return result;
   }
 
   @Override
   public <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException {
     RequestContent requestContent = parseRequestContent(content, accessToken);
-    ResponseContent responseContent = execute(requestContent);
-    return parseResult(responseContent, content.getResultClass());
+    ResponseContent responseContent = execute(requestContent, content);
+    R result = parseResult(responseContent, content.getResultClass());
+    afterExecute(requestContent, responseContent, content, result);
+    return result;
   }
 
   @Override
   public <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException {
     RequestContent requestContent = parseRequestContent(content, null, urlValues);
-    ResponseContent responseContent = execute(requestContent);
-    return parseResult(responseContent, content.getResultClass());
+    ResponseContent responseContent = execute(requestContent, content);
+    R result = parseResult(responseContent, content.getResultClass());
+    afterExecute(requestContent, responseContent, content, result);
+    return result;
   }
 
   @Override
   public <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException {
     RequestContent requestContent = parseRequestContent(content, accessToken, urlValues);
-    ResponseContent responseContent = execute(requestContent);
-    return parseResult(responseContent, content.getResultClass());
+    ResponseContent responseContent = execute(requestContent, content);
+    R result = parseResult(responseContent, content.getResultClass());
+    afterExecute(requestContent, responseContent, content, result);
+    return result;
   }
 
   @Override
   public ResponseContent execute(RequestContent requestContent) throws RequestExecutorException {
+    ResponseContent responseContent = execute(requestContent, null);
+    afterExecute(requestContent, responseContent, null, null);
+    return responseContent;
+  }
+
+  /**
+   * Internal execute method, call {@link #beforeExecute(RequestContent, Content)} first
+   *
+   * @param requestContent The request content
+   * @param content The content maybe null
+   * @return The response content
+   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutorListenerException The listener exception
+   */
+  private ResponseContent execute(RequestContent requestContent, Content<?>  content) throws RequestExecutorException {
+    beforeExecute(requestContent, content);
     try {
       return webClient.execute(requestContent);
     } catch (WebClientException e) {
@@ -156,10 +207,62 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @throws RequestExecutorException Could not parse
    */
   private RequestContent parseRequestContent(Content<?> content, String accessToken, Object... urlValues) throws RequestExecutorException {
+    beforeContentParse(content, accessToken, urlValues);
     try {
       return contentParserManager.parse(content, ContentHelper.getValidMetadata(content), accessToken, urlValues);
     } catch (ContentParserException | ContentMetadataException e) {
       throw new RequestExecutorException("Could not parse to request content from content " + content, e);
+    }
+  }
+
+  /**
+   * Listener method
+   *
+   * @param content The content cannot be null
+   * @param accessToken The access token maybe null
+   * @param urlValues The url template parameter values maybe null
+   */
+  private void beforeContentParse(Content<?> content, String accessToken, Object... urlValues) {
+    try {
+      for (RequestExecutorListener listener : listeners) {
+        listener.beforeContentParse(content, accessToken, urlValues);
+      }
+    } catch (RequestExecutorListenerException e) {
+      LOGGER.warn("Could not call listener method 'beforeContentParse'", e);
+    }
+  }
+
+  /**
+   * Listener method
+   *
+   * @param requestContent The request content parsed from {@link Content}
+   * @param content The content maybe null
+   */
+  private void beforeExecute(RequestContent requestContent, Content<?> content) {
+    try {
+      for (RequestExecutorListener listener : listeners) {
+        listener.beforeExecute(requestContent, content);
+      }
+    } catch (RequestExecutorListenerException e) {
+      LOGGER.warn("Could not call listener method 'beforeExecute'", e);
+    }
+  }
+
+  /**
+   * Listener method
+   *
+   * @param requestContent The request content cannot be null, parsed from {@link Content}
+   * @param responseContent The response content cannot be null
+   * @param content The content maybe null
+   * @param result The result maybe null
+   */
+  private void afterExecute(RequestContent requestContent, ResponseContent responseContent, Content<?> content, Result result) {
+    try {
+      for (RequestExecutorListener listener : listeners) {
+        listener.afterExecute(requestContent, responseContent, content, result);
+      }
+    } catch (RequestExecutorListenerException e) {
+      LOGGER.warn("Could not call listener method 'afterExecute'", e);
     }
   }
 
