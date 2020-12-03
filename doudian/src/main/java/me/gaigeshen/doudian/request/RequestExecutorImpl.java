@@ -283,7 +283,7 @@ public class RequestExecutorImpl implements RequestExecutor {
    *
    * @author gaigeshen
    */
-  private class LoggerRequestExecutorListener extends RequestExecutorListenerAdapter {
+  private class LoggerRequestExecutorListener implements RequestExecutorListener {
     @Override
     public void beforeContentParse(Content<?> content, String accessToken, Object... urlValues) {
       LOGGER.info("Content: {}, Access token: {}, UrlValues: {}", content, accessToken, urlValues);
