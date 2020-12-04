@@ -2,19 +2,16 @@ package me.gaigeshen.doudian.client;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * 抖店请求数据内容里面的参数集合
+ * 抖店请求数据内容里面的参数集合，所有的参数默认将按照参数名称排序
  *
  * @author gaigeshen
  */
 public class DoudianParams implements Iterable<DoudianParams.Param> {
 
-  private final List<Param> params = new ArrayList<>();
+  private final SortedSet<Param> params = new TreeSet<>();
 
   /**
    * 添加参数
@@ -90,7 +87,7 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
    *
    * @author gaigeshen
    */
-  public interface Param {
+  public interface Param extends Comparable<Param> {
     /**
      * 返回参数名称
      *
@@ -104,6 +101,14 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
      * @return 参数值
      */
     Object getValue();
+
+    /**
+     * 默认比较参数名称
+     */
+    @Override
+    default int compareTo(Param o) {
+      return getName().compareTo(o.getName());
+    }
   }
 
   /**
@@ -133,6 +138,23 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
     @Override
     public Object getValue() {
       return value;
+    }
+
+    @Override
+    public int hashCode() {
+      return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null || obj.getClass() != SimpleParam.class) {
+        return false;
+      }
+      SimpleParam other = (SimpleParam) obj;
+      return name.equals(other.name);
     }
 
     @Override
