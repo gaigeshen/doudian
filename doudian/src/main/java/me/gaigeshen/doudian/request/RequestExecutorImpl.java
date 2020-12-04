@@ -14,10 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Request executor use {@link WebClient} internal,
@@ -123,7 +120,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   @Override
   public <R extends Result> R execute(Content<R> content) throws RequestExecutorException {
-    RequestContent requestContent = parseRequestContent(content, null);
+    RequestContent requestContent = parseRequestContent(checkContentNotNull(content), null);
     ResponseContent responseContent = execute(requestContent, content);
     R result = parseResult(responseContent, content.getResultClass());
     afterExecute(requestContent, responseContent, content, result);
@@ -132,7 +129,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   @Override
   public <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException {
-    RequestContent requestContent = parseRequestContent(content, accessToken);
+    RequestContent requestContent = parseRequestContent(checkContentNotNull(content), accessToken);
     ResponseContent responseContent = execute(requestContent, content);
     R result = parseResult(responseContent, content.getResultClass());
     afterExecute(requestContent, responseContent, content, result);
@@ -141,7 +138,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   @Override
   public <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException {
-    RequestContent requestContent = parseRequestContent(content, null, urlValues);
+    RequestContent requestContent = parseRequestContent(checkContentNotNull(content), null, urlValues);
     ResponseContent responseContent = execute(requestContent, content);
     R result = parseResult(responseContent, content.getResultClass());
     afterExecute(requestContent, responseContent, content, result);
@@ -150,7 +147,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   @Override
   public <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException {
-    RequestContent requestContent = parseRequestContent(content, accessToken, urlValues);
+    RequestContent requestContent = parseRequestContent(checkContentNotNull(content), accessToken, urlValues);
     ResponseContent responseContent = execute(requestContent, content);
     R result = parseResult(responseContent, content.getResultClass());
     afterExecute(requestContent, responseContent, content, result);
@@ -159,9 +156,27 @@ public class RequestExecutorImpl implements RequestExecutor {
 
   @Override
   public ResponseContent execute(RequestContent requestContent) throws RequestExecutorException {
+    if (Objects.isNull(requestContent)) {
+      throw new RequestExecutorException("requestContent cannot be null");
+    }
     ResponseContent responseContent = execute(requestContent, null);
     afterExecute(requestContent, responseContent, null, null);
     return responseContent;
+  }
+
+  /**
+   * Check content argument cannot be null
+   *
+   * @param content The content
+   * @param <R> The result type
+   * @return The content
+   * @throws RequestExecutorException If the content is null
+   */
+  private <R extends Result> Content<R> checkContentNotNull(Content<R> content) throws RequestExecutorException {
+    if (Objects.isNull(content)) {
+      throw new RequestExecutorException("content cannot be null");
+    }
+    return content;
   }
 
   /**
