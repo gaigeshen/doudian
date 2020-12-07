@@ -32,14 +32,14 @@ public interface DoudianClient {
   void setWebClientConfig(WebClientConfig webClientConfig);
 
   /**
-   * 调用此方法将检查当前所有的配置是否正确，然后做相关的初始化
+   * 调用此方法将检查当前所有的配置是否正确，然后做相关的初始化，不要重复调用此方法
    *
    * @throws DoudianClientException 有任何异常抛出
    */
   void init() throws DoudianClientException;
 
   /**
-   * 关闭方法，释放所有的在用资源
+   * 关闭方法，释放所有的在用资源，不要重复调用此方法
    *
    * @throws DoudianClientException 有任何异常抛出
    */
