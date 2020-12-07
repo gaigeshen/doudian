@@ -1,5 +1,6 @@
 package me.gaigeshen.doudian.client;
 
+import me.gaigeshen.doudian.util.Asserts;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.*;
@@ -12,6 +13,17 @@ import java.util.*;
 public class DoudianParams implements Iterable<DoudianParams.Param> {
 
   private final SortedSet<Param> params = new TreeSet<>();
+
+  private final String method;
+
+  /**
+   * 创建抖店请求参数
+   *
+   * @param method 该抖店请求参数对应的远程服务名称，不能为空
+   */
+  public DoudianParams(String method) {
+    this.method = Asserts.notBlank(method, "method");
+  }
 
   /**
    * 添加参数
@@ -59,6 +71,10 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
       return null;
     }
     return param.getValue();
+  }
+
+  public String getMethod() {
+    return method;
   }
 
   @Override
