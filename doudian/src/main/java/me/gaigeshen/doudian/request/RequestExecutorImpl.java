@@ -186,7 +186,6 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @param content The content maybe null
    * @return The response content
    * @throws RequestExecutorException Could not execute
-   * @throws RequestExecutorListenerException The listener exception
    */
   private ResponseContent execute(RequestContent requestContent, Content<?>  content) throws RequestExecutorException {
     beforeExecute(requestContent, content);
