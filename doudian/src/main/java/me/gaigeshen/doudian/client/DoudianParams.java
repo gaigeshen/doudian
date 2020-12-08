@@ -16,13 +16,19 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
 
   private final String method;
 
+  private final String shopId;
+
   /**
    * 创建抖店请求参数
    *
    * @param method 该抖店请求参数对应的远程服务名称，不能为空
+   * @param shopId 店铺编号不能为空
    */
-  public DoudianParams(String method) {
-    this.method = Asserts.notBlank(method, "method");
+  public DoudianParams(String method, String shopId) {
+    Asserts.notBlank(method, "method");
+    Asserts.notBlank(shopId, "shopId");
+    this.method = method;
+    this.shopId = shopId;
   }
 
   /**
@@ -73,8 +79,22 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
     return param.getValue();
   }
 
+  /**
+   * 返回远程服务名称，不为空
+   *
+   * @return 远程服务名称
+   */
   public String getMethod() {
     return method;
+  }
+
+  /**
+   * 返回店铺编号，不为空
+   *
+   * @return 店铺编号
+   */
+  public String getShopId() {
+    return shopId;
   }
 
   @Override

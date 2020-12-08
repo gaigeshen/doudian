@@ -42,18 +42,17 @@ public class DoudianClientImpl extends AbstractDoudianClient {
    * 执行抖店远程服务请求
    *
    * @param params 抖店请求参数
-   * @param shopId 店铺编号，不可为空
    * @param <D> 抖店请求执行结果中数据部分的类型
    * @return 抖店请求执行结果中数据
    * @throws ExecutionException 请求执行异常
    * @throws ExecutionResultException 请求执行结果异常，可以认为请求执行业务结果是失败的
-   * @throws NoAccessTokenException 该店铺不存在访问令牌
+   * @throws NoAccessTokenException 该请求参数内的店铺编号不存在访问令牌
    */
-  public <D> D execute(DoudianParams params, String shopId) throws ExecutionException {
+  public <D> D execute(DoudianParams params) throws ExecutionException {
     DoudianContent<D> content = contentCreator.create(params, getAppConfig());
     AccessToken accessToken;
     try {
-      accessToken = getAccessTokenStore().findByShopId(shopId, true);
+      accessToken = getAccessTokenStore().findByShopId(params.getShopId(), true);
     } catch (AccessTokenStoreException e) {
       throw new ExecutionException(e).setContent(content);
     } catch (AccessTokenNotFoundException e) {

@@ -42,15 +42,14 @@ public class DoudianContentCreatorImpl implements DoudianContentCreator {
     String paramsString = paramsStringify.parseString(params, true);
     String version = "2";
 
-    String input = "app_key" + appConfig.getAppKey() +
-            "method" + params.getMethod() + "param_json" + paramsString +
-            "timestamp" + timestamp + "v" + version;
-    String sign = DigestUtils.md5Hex(appConfig.getAppSecret() + input + appConfig.getAppSecret());
+    String signInput = "app_key" + appConfig.getAppKey()
+            + "method" + params.getMethod() + "param_json" + paramsString
+            + "timestamp" + timestamp + "v" + version;
+    String sign = DigestUtils.md5Hex(appConfig.getAppSecret() + signInput + appConfig.getAppSecret());
 
     return DoudianContent.<D>builder()
-            .setMethod(params.getMethod()).setAppKey(appConfig.getAppKey())
-            .setParamJson(paramsString)
-            .setTimestamp(timestamp).setV(version)
+            .setMethod(params.getMethod()).setParamJson(paramsString)
+            .setAppKey(appConfig.getAppKey()).setTimestamp(timestamp).setV(version)
             .setSign(sign)
             .build();
   }
