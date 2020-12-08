@@ -7,22 +7,22 @@ import me.gaigeshen.doudian.request.result.Result;
  *
  * @author gaigeshen
  */
-public class ExecutionResultException extends ExecutionException {
-  public ExecutionResultException(String message) {
+public class RequestExecutionResultException extends RequestExecutionException {
+  public RequestExecutionResultException(String message) {
     super(message);
   }
-  public ExecutionResultException(String message, Throwable cause) {
+  public RequestExecutionResultException(String message, Throwable cause) {
     super(message, cause);
   }
 
   @Override
-  public ExecutionResultException setContent(Content<?> content) {
+  public RequestExecutionResultException setContent(Content<?> content) {
     super.setContent(content);
     return this;
   }
 
   @Override
-  public ExecutionResultException setResult(Result result) {
+  public RequestExecutionResultException setResult(Result result) {
     super.setResult(result);
     return this;
   }

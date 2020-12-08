@@ -7,25 +7,25 @@ import me.gaigeshen.doudian.request.result.Result;
  *
  * @author gaigeshen
  */
-public class ExecutionException extends RequestExecutorException {
+public class RequestExecutionException extends RequestExecutorException {
 
   private Content<?> content;
 
   private Result result;
 
-  public ExecutionException(String message) {
+  public RequestExecutionException(String message) {
     super(message);
   }
-  public ExecutionException(String message, Throwable cause) {
+  public RequestExecutionException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  public ExecutionException setContent(Content<?> content) {
+  public RequestExecutionException setContent(Content<?> content) {
     this.content = content;
     return this;
   }
 
-  public ExecutionException setResult(Result result) {
+  public RequestExecutionException setResult(Result result) {
     this.result = result;
     return this;
   }

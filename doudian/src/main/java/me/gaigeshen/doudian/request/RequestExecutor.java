@@ -77,12 +77,12 @@ public interface RequestExecutor extends Closeable {
    * @param <D> The result data type
    * @return The result data
    * @throws RequestExecutorException Could not execute
-   * @throws ExecutionResultException If the abstract result is failed
+   * @throws RequestExecutionResultException If the abstract result is failed
    */
   default <D> D executeForData(AbstractContent<? extends AbstractResult<D>> content) throws RequestExecutorException {
     AbstractResult<D> result = execute(content);
     if (result.failed()) {
-      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+      throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
     return result.getData();
   }
@@ -95,12 +95,12 @@ public interface RequestExecutor extends Closeable {
    * @param <D> The result data type
    * @return The result data
    * @throws RequestExecutorException Could not execute
-   * @throws ExecutionResultException If the abstract result is failed
+   * @throws RequestExecutionResultException If the abstract result is failed
    */
   default <D> D executeForData(AbstractContent<? extends AbstractResult<D>> content, String accessToken) throws RequestExecutorException {
     AbstractResult<D> result = execute(content, accessToken);
     if (result.failed()) {
-      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+      throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
     return result.getData();
   }
@@ -113,12 +113,12 @@ public interface RequestExecutor extends Closeable {
    * @param <D> The result data type
    * @return The result data
    * @throws RequestExecutorException Could not execute
-   * @throws ExecutionResultException If the abstract result is failed
+   * @throws RequestExecutionResultException If the abstract result is failed
    */
   default <D> D executeForData(AbstractContent<? extends AbstractResult<D>> content, Object... urlValues) throws RequestExecutorException {
     AbstractResult<D> result = execute(content, urlValues);
     if (result.failed()) {
-      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+      throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
     return result.getData();
   }
@@ -132,12 +132,12 @@ public interface RequestExecutor extends Closeable {
    * @param <D> The result data type
    * @return The result data
    * @throws RequestExecutorException Could not execute
-   * @throws ExecutionResultException If the abstract result is failed
+   * @throws RequestExecutionResultException If the abstract result is failed
    */
   default <D> D executeForData(AbstractContent<? extends AbstractResult<D>> content, String accessToken, Object... urlValues) throws RequestExecutorException {
     AbstractResult<D> result = execute(content, accessToken, urlValues);
     if (result.failed()) {
-      throw new ExecutionResultException(result.getMessage()).setContent(content).setResult(result);
+      throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
     }
     return result.getData();
   }
