@@ -1,63 +1,47 @@
 package me.gaigeshen.doudian.client;
 
-import me.gaigeshen.doudian.authorization.AccessToken;
-import me.gaigeshen.doudian.authorization.AccessTokenNotFoundException;
-import me.gaigeshen.doudian.authorization.AccessTokenStoreException;
-import me.gaigeshen.doudian.util.Asserts;
+import me.gaigeshen.doudian.http.RequestContent;
+import me.gaigeshen.doudian.http.ResponseContent;
+import me.gaigeshen.doudian.request.RequestExecutorException;
+import me.gaigeshen.doudian.request.content.Content;
+import me.gaigeshen.doudian.request.result.Result;
+
+import java.io.IOException;
 
 /**
- * 抖店客户端实现，使用此类对象之前，确保先调用了初始化方法，初始化正常才可继续使用，建议在系统初始化的时候调用此类对象的初始化方法
+ * 抽象的抖店客户端
  *
  * @author gaigeshen
  */
-public class DoudianClientImpl extends AbstractDoudianClient {
+public class DoudianClientImpl implements DoudianClient {
 
-  private final DoudianContentCreator contentCreator;
-
-  private DoudianClientImpl(DoudianContentCreator contentCreator) {
-    this.contentCreator = Asserts.notNull(contentCreator, "contentCreator");
+  @Override
+  public <R extends Result> R execute(Content<R> content) throws RequestExecutorException {
+    return null;
   }
 
-  /**
-   * 创建抖店客户端
-   *
-   * @param contentCreator 用于创建抖店请求数据内容
-   * @return 抖店客户端
-   */
-  public static DoudianClientImpl create(DoudianContentCreator contentCreator) {
-    return new DoudianClientImpl(contentCreator);
+  @Override
+  public <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException {
+    return null;
   }
 
-  /**
-   * 创建抖店客户端，使用默认的抖店请求数据内容创建器
-   *
-   * @return 抖店客户端
-   * @see DoudianContentCreatorImpl
-   */
-  public static DoudianClientImpl create() {
-    return create(new DoudianContentCreatorImpl());
+  @Override
+  public <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException {
+    return null;
   }
 
-  /**
-   * 执行抖店远程服务请求
-   *
-   * @param params 抖店请求参数
-   * @param <D> 抖店请求执行结果中数据部分的类型
-   * @return 抖店请求执行结果中数据
-   * @throws ExecutionException 请求执行异常
-   * @throws ExecutionResultException 请求执行结果异常，可以认为请求执行业务结果是失败的
-   * @throws NoAccessTokenException 该请求参数内的店铺编号不存在访问令牌
-   */
-  public <D> D execute(DoudianParams params) throws ExecutionException {
-    DoudianContent<D> content = contentCreator.create(params, getAppConfig());
-    AccessToken accessToken;
-    try {
-      accessToken = getAccessTokenStore().findByShopId(params.getShopId(), true);
-    } catch (AccessTokenStoreException e) {
-      throw new ExecutionException(e).setContent(content);
-    } catch (AccessTokenNotFoundException e) {
-      throw new NoAccessTokenException(e).setContent(content);
-    }
-    return execute(content, accessToken.getAccessToken());
+  @Override
+  public <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException {
+    return null;
+  }
+
+  @Override
+  public ResponseContent execute(RequestContent requestContent) throws RequestExecutorException {
+    return null;
+  }
+
+  @Override
+  public void close() throws IOException {
+
   }
 }
