@@ -22,9 +22,9 @@ public interface RequestExecutor extends Closeable {
    * @param content The content cannot be null
    * @param <R> The result type
    * @return The result
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    */
-  <R extends Result> R execute(Content<R> content) throws RequestExecutorException;
+  <R extends Result> R execute(Content<R> content) throws RequestExecutionException;
 
   /**
    * Execute with content and returns result
@@ -33,9 +33,9 @@ public interface RequestExecutor extends Closeable {
    * @param accessToken The access token, can be null or blank
    * @param <R> The result type
    * @return The result
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    */
-  <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException;
+  <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutionException;
 
   /**
    * Execute with content and returns result
@@ -44,9 +44,9 @@ public interface RequestExecutor extends Closeable {
    * @param urlValues The url template parameter values
    * @param <R> The result type
    * @return The result
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    */
-  <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException;
+  <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutionException;
 
   /**
    * Execute with content and returns result
@@ -56,18 +56,18 @@ public interface RequestExecutor extends Closeable {
    * @param urlValues The url template parameter values
    * @param <R> The result type
    * @return The result
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    */
-  <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException;
+  <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutionException;
 
   /**
    * Execute with request content and returns response content
    *
    * @param requestContent The request content cannot be null
    * @return The response content
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    */
-  ResponseContent execute(RequestContent requestContent) throws RequestExecutorException;
+  ResponseContent execute(RequestContent requestContent) throws RequestExecutionException;
 
   /**
    * Execute with abstract content and returns abstract result include data
@@ -75,10 +75,10 @@ public interface RequestExecutor extends Closeable {
    * @param content The abstract content cannot be null
    * @param <D> The result data type
    * @return The result data
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content) throws RequestExecutorException {
+  default <D> D executeForData(Content<? extends AbstractResult<D>> content) throws RequestExecutionException {
     AbstractResult<D> result = execute(content);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -93,10 +93,10 @@ public interface RequestExecutor extends Closeable {
    * @param accessToken The access token, can be null or blank
    * @param <D> The result data type
    * @return The result data
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken) throws RequestExecutorException {
+  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, accessToken);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -111,10 +111,10 @@ public interface RequestExecutor extends Closeable {
    * @param urlValues The url template parameter values
    * @param <D> The result data type
    * @return The result data
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, Object... urlValues) throws RequestExecutorException {
+  default <D> D executeForData(Content<? extends AbstractResult<D>> content, Object... urlValues) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, urlValues);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -130,10 +130,10 @@ public interface RequestExecutor extends Closeable {
    * @param urlValues The url template parameter values
    * @param <D> The result data type
    * @return The result data
-   * @throws RequestExecutorException Could not execute
+   * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken, Object... urlValues) throws RequestExecutorException {
+  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken, Object... urlValues) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, accessToken, urlValues);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);

@@ -119,45 +119,45 @@ public class RequestExecutorImpl implements RequestExecutor {
   }
 
   @Override
-  public <R extends Result> R execute(Content<R> content) throws RequestExecutorException {
+  public <R extends Result> R execute(Content<R> content) throws RequestExecutionException {
     RequestContent requestContent = parseRequestContent(checkContentNotNull(content), null);
     ResponseContent responseContent = execute(requestContent, content);
-    R result = parseResult(responseContent, content.getResultClass());
+    R result = parseResult(responseContent, content.getResultClass(), content);
     afterExecute(requestContent, responseContent, content, result);
     return result;
   }
 
   @Override
-  public <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutorException {
+  public <R extends Result> R execute(Content<R> content, String accessToken) throws RequestExecutionException {
     RequestContent requestContent = parseRequestContent(checkContentNotNull(content), accessToken);
     ResponseContent responseContent = execute(requestContent, content);
-    R result = parseResult(responseContent, content.getResultClass());
+    R result = parseResult(responseContent, content.getResultClass(), content);
     afterExecute(requestContent, responseContent, content, result);
     return result;
   }
 
   @Override
-  public <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutorException {
+  public <R extends Result> R execute(Content<R> content, Object... urlValues) throws RequestExecutionException {
     RequestContent requestContent = parseRequestContent(checkContentNotNull(content), null, urlValues);
     ResponseContent responseContent = execute(requestContent, content);
-    R result = parseResult(responseContent, content.getResultClass());
+    R result = parseResult(responseContent, content.getResultClass(), content);
     afterExecute(requestContent, responseContent, content, result);
     return result;
   }
 
   @Override
-  public <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutorException {
+  public <R extends Result> R execute(Content<R> content, String accessToken, Object... urlValues) throws RequestExecutionException {
     RequestContent requestContent = parseRequestContent(checkContentNotNull(content), accessToken, urlValues);
     ResponseContent responseContent = execute(requestContent, content);
-    R result = parseResult(responseContent, content.getResultClass());
+    R result = parseResult(responseContent, content.getResultClass(), content);
     afterExecute(requestContent, responseContent, content, result);
     return result;
   }
 
   @Override
-  public ResponseContent execute(RequestContent requestContent) throws RequestExecutorException {
+  public ResponseContent execute(RequestContent requestContent) throws RequestExecutionException {
     if (Objects.isNull(requestContent)) {
-      throw new RequestExecutorException("requestContent cannot be null");
+      throw new RequestExecutionException("requestContent cannot be null");
     }
     ResponseContent responseContent = execute(requestContent, null);
     afterExecute(requestContent, responseContent, null, null);
@@ -170,47 +170,13 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @param content The content
    * @param <R> The result type
    * @return The content
-   * @throws RequestExecutorException If the content is null
+   * @throws RequestExecutionException If the content is null
    */
-  private <R extends Result> Content<R> checkContentNotNull(Content<R> content) throws RequestExecutorException {
+  private <R extends Result> Content<R> checkContentNotNull(Content<R> content) throws RequestExecutionException {
     if (Objects.isNull(content)) {
-      throw new RequestExecutorException("content cannot be null");
+      throw new RequestExecutionException("content cannot be null");
     }
     return content;
-  }
-
-  /**
-   * Internal execute method, call {@link #beforeExecute(RequestContent, Content)} first
-   *
-   * @param requestContent The request content
-   * @param content The content maybe null
-   * @return The response content
-   * @throws RequestExecutorException Could not execute
-   */
-  private ResponseContent execute(RequestContent requestContent, Content<?>  content) throws RequestExecutorException {
-    beforeExecute(requestContent, content);
-    try {
-      return webClient.execute(requestContent);
-    } catch (WebClientException e) {
-      throw new RequestExecutorException("Could not execute with request content " + requestContent, e);
-    }
-  }
-
-  /**
-   * Parse from response content to result
-   *
-   * @param responseContent The response content
-   * @param resultClass The result class
-   * @param <R> The result type
-   * @return The result
-   * @throws RequestExecutorException Could not parse
-   */
-  private <R extends Result> R parseResult(ResponseContent responseContent, Class<R> resultClass) throws RequestExecutorException {
-    try {
-      return resultParserManager.parse(responseContent, resultClass);
-    } catch (ResultParserException e) {
-      throw new RequestExecutorException("Could not parse to result from response content, result class is " + resultClass, e);
-    }
   }
 
   /**
@@ -220,14 +186,49 @@ public class RequestExecutorImpl implements RequestExecutor {
    * @param accessToken The access token can be null or blank
    * @param urlValues The url template parameter values
    * @return Request content cannot be null
-   * @throws RequestExecutorException Could not parse
+   * @throws RequestExecutionException Could not parse
    */
-  private RequestContent parseRequestContent(Content<?> content, String accessToken, Object... urlValues) throws RequestExecutorException {
+  private RequestContent parseRequestContent(Content<?> content, String accessToken, Object... urlValues) throws RequestExecutionException {
     beforeContentParse(content, accessToken, urlValues);
     try {
       return contentParserManager.parse(content, ContentHelper.getValidMetadata(content), accessToken, urlValues);
     } catch (ContentParserException | ContentMetadataException e) {
-      throw new RequestExecutorException("Could not parse to request content from content " + content, e);
+      throw new RequestExecutionException("Could not parse to request content from content " + content, e).setContent(content);
+    }
+  }
+
+  /**
+   * Internal execute method, call {@link #beforeExecute(RequestContent, Content)} first
+   *
+   * @param requestContent The request content
+   * @param content The content maybe null
+   * @return The response content
+   * @throws RequestExecutionException Could not execute
+   */
+  private ResponseContent execute(RequestContent requestContent, Content<?> content) throws RequestExecutionException {
+    beforeExecute(requestContent, content);
+    try {
+      return webClient.execute(requestContent);
+    } catch (WebClientException e) {
+      throw new RequestExecutionException("Could not execute with request content " + requestContent, e).setContent(content);
+    }
+  }
+
+  /**
+   * Parse from response content to result
+   *
+   * @param responseContent The response content
+   * @param resultClass The result class
+   * @param content The content
+   * @param <R> The result type
+   * @return The result
+   * @throws RequestExecutionException Could not parse
+   */
+  private <R extends Result> R parseResult(ResponseContent responseContent, Class<R> resultClass, Content<?> content) throws RequestExecutionException {
+    try {
+      return resultParserManager.parse(responseContent, resultClass);
+    } catch (ResultParserException e) {
+      throw new RequestExecutionException("Could not parse to result from response content, result class is " + resultClass, e).setContent(content);
     }
   }
 

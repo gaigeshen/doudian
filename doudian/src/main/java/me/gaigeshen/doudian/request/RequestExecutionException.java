@@ -1,17 +1,15 @@
 package me.gaigeshen.doudian.request;
 
 import me.gaigeshen.doudian.request.content.Content;
-import me.gaigeshen.doudian.request.result.Result;
 
 /**
+ * Could not execute, this exception object maybe include {@link Content} object
  *
  * @author gaigeshen
  */
 public class RequestExecutionException extends RequestExecutorException {
 
   private Content<?> content;
-
-  private Result result;
 
   public RequestExecutionException(String message) {
     super(message);
@@ -25,16 +23,7 @@ public class RequestExecutionException extends RequestExecutorException {
     return this;
   }
 
-  public RequestExecutionException setResult(Result result) {
-    this.result = result;
-    return this;
-  }
-
   public Content<?> getContent() {
     return content;
-  }
-
-  public Result getResult() {
-    return result;
   }
 }

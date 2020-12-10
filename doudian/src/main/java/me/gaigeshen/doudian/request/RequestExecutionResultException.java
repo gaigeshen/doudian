@@ -1,13 +1,17 @@
 package me.gaigeshen.doudian.request;
 
 import me.gaigeshen.doudian.request.content.Content;
-import me.gaigeshen.doudian.request.result.Result;
+import me.gaigeshen.doudian.request.result.AbstractResult;
 
 /**
+ * After executed, the {@link AbstractResult#failed()} is true
  *
  * @author gaigeshen
  */
 public class RequestExecutionResultException extends RequestExecutionException {
+
+  private AbstractResult<?> result;
+
   public RequestExecutionResultException(String message) {
     super(message);
   }
@@ -21,9 +25,12 @@ public class RequestExecutionResultException extends RequestExecutionException {
     return this;
   }
 
-  @Override
-  public RequestExecutionResultException setResult(Result result) {
-    super.setResult(result);
+  public RequestExecutionResultException setResult(AbstractResult<?> result) {
+    this.result = result;
     return this;
+  }
+
+  public AbstractResult<?> getResult() {
+    return result;
   }
 }
