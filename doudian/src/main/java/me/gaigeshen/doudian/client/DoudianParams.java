@@ -16,19 +16,14 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
 
   private final String method;
 
-  private final String shopId;
-
   /**
    * 创建抖店请求参数
    *
    * @param method 该抖店请求参数对应的远程服务名称，不能为空
-   * @param shopId 店铺编号不能为空
    */
-  public DoudianParams(String method, String shopId) {
+  public DoudianParams(String method) {
     Asserts.notBlank(method, "method");
-    Asserts.notBlank(shopId, "shopId");
     this.method = method;
-    this.shopId = shopId;
   }
 
   /**
@@ -44,39 +39,27 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
   }
 
   /**
-   * 移除所有参数
+   * 添加参数
+   *
+   * @param name 参数名称
+   * @param value 参数值
    */
-  public void removeAllParams() {
-    params.clear();
+  public void addParam(String name, Object value) {
+    addParam(createParam(name, value));
   }
 
   /**
-   * 获取参数
+   * 添加很多参数
    *
-   * @param name 参数名称
-   * @return 参数可能为空
+   * @param nameValues 参数的键值对集合
    */
-  public Param getParam(String name) {
-    for (Param param : params) {
-      if (param.getName().equals(name)) {
-        return param;
-      }
+  public void addParams(Map<String, Object> nameValues) {
+    if (Objects.isNull(nameValues)) {
+      return;
     }
-    return null;
-  }
-
-  /**
-   * 获取参数值
-   *
-   * @param name 参数名称
-   * @return 参数值可能为空
-   */
-  public Object getParamValue(String name) {
-    Param param = getParam(name);
-    if (Objects.isNull(param)) {
-      return null;
+    for (Map.Entry<String, Object> entry : nameValues.entrySet()) {
+      addParam(entry.getKey(), entry.getValue());
     }
-    return param.getValue();
   }
 
   /**
@@ -86,15 +69,6 @@ public class DoudianParams implements Iterable<DoudianParams.Param> {
    */
   public String getMethod() {
     return method;
-  }
-
-  /**
-   * 返回店铺编号，不为空
-   *
-   * @return 店铺编号
-   */
-  public String getShopId() {
-    return shopId;
   }
 
   @Override

@@ -1,5 +1,7 @@
 package me.gaigeshen.doudian.client;
 
+import me.gaigeshen.doudian.request.content.Content;
+
 /**
  * 抖店客户端请求执行异常，具体表达当前没有访问令牌造成的异常
  *
@@ -17,14 +19,8 @@ public class DoudianExecutionMissingAccessTokenException extends DoudianExecutio
   }
 
   @Override
-  public DoudianExecutionMissingAccessTokenException setContent(DoudianContent<?> content) {
+  public DoudianExecutionMissingAccessTokenException setContent(Content<?> content) {
     super.setContent(content);
-    return this;
-  }
-
-  @Override
-  public DoudianExecutionMissingAccessTokenException setResult(DoudianResult<?> result) {
-    super.setResult(result);
     return this;
   }
 }

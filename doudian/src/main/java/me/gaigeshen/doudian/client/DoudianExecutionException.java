@@ -1,5 +1,7 @@
 package me.gaigeshen.doudian.client;
 
+import me.gaigeshen.doudian.request.content.Content;
+
 /**
  * 抖店客户端请求执行异常
  *
@@ -7,9 +9,7 @@ package me.gaigeshen.doudian.client;
  */
 public class DoudianExecutionException extends DoudianClientException {
 
-  private DoudianContent<?> content;
-
-  private DoudianResult<?> result;
+  private Content<?> content;
 
   public DoudianExecutionException(String message) {
     super(message);
@@ -27,19 +27,8 @@ public class DoudianExecutionException extends DoudianClientException {
    * @param content 请求数据内容
    * @return 此异常对象
    */
-  public DoudianExecutionException setContent(DoudianContent<?> content) {
+  public DoudianExecutionException setContent(Content<?> content) {
     this.content = content;
-    return this;
-  }
-
-  /**
-   * 设置请求执行结果
-   *
-   * @param result 请求执行结果
-   * @return 此异常对象
-   */
-  public DoudianExecutionException setResult(DoudianResult<?> result) {
-    this.result = result;
     return this;
   }
 
@@ -48,16 +37,7 @@ public class DoudianExecutionException extends DoudianClientException {
    *
    * @return 请求数据内容，可能为空
    */
-  public DoudianContent<?> getContent() {
+  public Content<?> getContent() {
     return content;
-  }
-
-  /**
-   * 返回设置的请求执行结果
-   *
-   * @return 请求执行结果，可能为空
-   */
-  public DoudianResult<?> getResult() {
-    return result;
   }
 }
