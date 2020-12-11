@@ -1,14 +1,16 @@
 package me.gaigeshen.doudian.spring.boot.autoconfigure;
 
-import me.gaigeshen.doudian.authorization.AccessTokenStore;
-import me.gaigeshen.doudian.authorization.AccessTokenStoreImpl;
+import me.gaigeshen.doudian.authorization.*;
 import me.gaigeshen.doudian.client.DefaultDoudianClient;
 import me.gaigeshen.doudian.client.DoudianClient;
+import me.gaigeshen.doudian.client.authorization.DefaultAccessTokenRefresher;
+import me.gaigeshen.doudian.client.authorization.DefaultAuthorizationFlow;
 import me.gaigeshen.doudian.client.config.AppConfig;
 import me.gaigeshen.doudian.http.WebClientConfig;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +35,6 @@ public class DoudianAutoConfiguration {
     this.properties = properties;
   }
 
-  @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
   public DoudianClient doudianClient(AccessTokenStore accessTokenStore) throws Exception {
     AppConfig appConfig = new AppConfig(properties.getAppKey(), properties.getAppSecret());
@@ -49,5 +50,27 @@ public class DoudianAutoConfiguration {
   @Bean
   public AccessTokenStore accessTokenStore() {
     return new AccessTokenStoreImpl();
+  }
+
+  @ConditionalOnProperty(prefix = "doudian", name = "enable-authorization-flow")
+  @Configuration
+  protected static class AuthorizationFlowConfiguration {
+
+    @Bean
+    public AuthorizationFlow authorizationFlow(AccessTokenManager accessTokenManager,
+                                               DoudianClient doudianClient) {
+      return new DefaultAuthorizationFlow(accessTokenManager, doudianClient);
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public AccessTokenManager accessTokenManager(AccessTokenStore accessTokenStore,
+                                                 AccessTokenRefresher accessTokenRefresher) throws Exception {
+      return new AccessTokenManagerImpl(accessTokenStore, accessTokenRefresher);
+    }
+
+    @Bean
+    public AccessTokenRefresher accessTokenRefresher(DoudianClient doudianClient) {
+      return new DefaultAccessTokenRefresher(doudianClient);
+    }
   }
 }

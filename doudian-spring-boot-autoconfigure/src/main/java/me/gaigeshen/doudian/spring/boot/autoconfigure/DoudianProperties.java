@@ -30,6 +30,10 @@ public class DoudianProperties {
    * 访问令牌存储器类型
    */
   private AccessTokenStoreType accessTokenStoreType = AccessTokenStoreType.MEMORY;
+  /**
+   * 是否启用授权流程处理，如果启用则会开启授权流程的支持，同时也会开启访问令牌管理器
+   */
+  private boolean enableAuthorizationFlow = false;
 
   public String getAppKey() {
     return appKey;
@@ -69,6 +73,14 @@ public class DoudianProperties {
 
   public void setAccessTokenStoreType(AccessTokenStoreType accessTokenStoreType) {
     this.accessTokenStoreType = accessTokenStoreType;
+  }
+
+  public boolean isEnableAuthorizationFlow() {
+    return enableAuthorizationFlow;
+  }
+
+  public void setEnableAuthorizationFlow(boolean enableAuthorizationFlow) {
+    this.enableAuthorizationFlow = enableAuthorizationFlow;
   }
 
   /**
