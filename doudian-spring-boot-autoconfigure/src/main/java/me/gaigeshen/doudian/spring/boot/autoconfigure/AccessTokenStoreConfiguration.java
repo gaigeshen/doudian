@@ -6,7 +6,6 @@ import me.gaigeshen.doudian.authorization.AccessTokenStoreJdbcImpl;
 import me.gaigeshen.doudian.client.DoudianClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +22,6 @@ import javax.sql.DataSource;
 @Configuration
 public class AccessTokenStoreConfiguration {
 
-  @ConditionalOnMissingBean
   @Bean
   public AccessTokenStore accessTokenStore(DataSource dataSource,
                                            @DoudianDataSource ObjectProvider<DataSource> doudianDataSource,
@@ -35,7 +33,6 @@ public class AccessTokenStoreConfiguration {
     return new AccessTokenStoreImpl();
   }
 
-  @ConditionalOnMissingBean
   @Bean
   public DoudianDataSourceInitializer doudianDataSourceInitializer(
           DataSource dataSource, @DoudianDataSource ObjectProvider<DataSource> doudianDataSource,

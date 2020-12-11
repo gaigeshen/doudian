@@ -35,7 +35,6 @@ public class DoudianAutoConfiguration {
     this.properties = properties;
   }
 
-  @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
   public DoudianClient doudianClient(AccessTokenStore accessTokenStore) throws Exception {
     AppConfig appConfig = new AppConfig(properties.getAppKey(), properties.getAppSecret());
