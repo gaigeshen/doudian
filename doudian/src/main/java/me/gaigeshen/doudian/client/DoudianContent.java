@@ -1,6 +1,5 @@
 package me.gaigeshen.doudian.client;
 
-import me.gaigeshen.doudian.client.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
 import me.gaigeshen.doudian.request.content.MetadataAttributes;
 
@@ -10,7 +9,7 @@ import me.gaigeshen.doudian.request.content.MetadataAttributes;
  * @author gaigeshen
  */
 @MetadataAttributes(
-        url = Constants.API_URL
+        "https://openapi-fxg.jinritemai.com"
 )
 public class DoudianContent<D> extends AbstractContent<DoudianResult<D>> {
 
