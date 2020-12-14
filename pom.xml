@@ -39,6 +39,7 @@
         <commons.collection.version>4.2</commons.collection.version>
         <commons.codec.version>1.13</commons.codec.version>
         <commons.dbutils.version>1.7</commons.dbutils.version>
+        <jedis.version>3.3.0</jedis.version>
         <httpcomponents.version>4.5.8</httpcomponents.version>
         <slf4j.version>1.7.30</slf4j.version>
         <lombok.version>1.18.16</lombok.version>
@@ -70,6 +71,11 @@
                 <groupId>commons-dbutils</groupId>
                 <artifactId>commons-dbutils</artifactId>
                 <version>${commons.dbutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
