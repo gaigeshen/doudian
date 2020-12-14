@@ -42,6 +42,7 @@
         <httpcomponents.version>4.5.8</httpcomponents.version>
         <slf4j.version>1.7.30</slf4j.version>
         <lombok.version>1.18.16</lombok.version>
+        <spring.boot.version>2.1.4.RELEASE</spring.boot.version>
     </properties>
     <dependencyManagement>
         <dependencies>
