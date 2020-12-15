@@ -11,12 +11,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * 抖店请求参数构建器实现，用于将对象实例转换成抖店请求参数，取该对象的所有字段，包含所有父类的字段
  *
  * @author gaigeshen
+ * @see DoudianParam
  */
 public class DoudianParamsBuilderFromObjectImpl implements DoudianParamsBuilder<Object> {
 
   private static final DoudianParamsBuilderFromObjectImpl INSTANCE = new DoudianParamsBuilderFromObjectImpl();
 
-  // 对象实例类型和其所有字段的映射关系
   private final Map<Class<?>, Map<String, Field>> sourceFieldsCache = new ConcurrentHashMap<>();
 
   /**
@@ -52,16 +52,21 @@ public class DoudianParamsBuilderFromObjectImpl implements DoudianParamsBuilder<
     return params;
   }
 
-  // 获取对象实例类型的所有字段，返回字段名称和字段的映射关系，字段名称可以由注解指定
-  // 返回的映射关系将被缓存避免重复获取，且不为空对象
   private Map<String, Field> getAllFields(Class<?> sourceClass) {
     return sourceFieldsCache.computeIfAbsent(sourceClass, aClass -> {
       Map<String, Field> fields = new HashMap<>();
       Class<?> currentClass = aClass;
       while (currentClass != null) {
         for (Field field : currentClass.getDeclaredFields()) {
-          DoudianParam anno = field.getAnnotation(DoudianParam.class);
-          fields.put(Objects.nonNull(anno) ? StringUtils.defaultIfBlank(anno.value(), field.getName()) : field.getName(), field);
+          DoudianParam annotation = field.getAnnotation(DoudianParam.class);
+          if (Objects.isNull(annotation)) {
+            continue;
+          }
+          if (StringUtils.isNotBlank(annotation.value())) {
+            fields.put(annotation.value(), field);
+          } else {
+            fields.put(annotation.namingStrategy().getName(field.getName()), field);
+          }
         }
         currentClass = currentClass.getSuperclass();
       }
