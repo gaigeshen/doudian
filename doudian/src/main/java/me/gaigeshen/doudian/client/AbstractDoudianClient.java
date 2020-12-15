@@ -19,6 +19,7 @@ import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.content.parser.ContentParser;
 import me.gaigeshen.doudian.request.content.parser.ContentParserParametersImpl;
 import me.gaigeshen.doudian.request.result.Result;
+import me.gaigeshen.doudian.request.result.ResultData;
 import me.gaigeshen.doudian.request.result.parser.ResultParser;
 import me.gaigeshen.doudian.request.result.parser.ResultParserJsonImpl;
 
@@ -181,7 +182,7 @@ public abstract class AbstractDoudianClient implements DoudianClient {
   }
 
   @Override
-  public final <D extends DoudianData> D execute(DoudianParams params, String shopId) throws DoudianExecutionException {
+  public final <D extends ResultData> D execute(DoudianParams params, String shopId) throws DoudianExecutionException {
     DoudianContentCreator contentCreator = getContentCreator();
     if (Objects.isNull(contentCreator)) {
       throw new DoudianExecutionException("No content creator for create content from params " + params);

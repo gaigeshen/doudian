@@ -1,6 +1,7 @@
 package me.gaigeshen.doudian.client;
 
 import me.gaigeshen.doudian.client.config.AppConfig;
+import me.gaigeshen.doudian.request.result.ResultData;
 
 /**
  * 抖店请求数据内容创建器，用于创建抖店请求数据内容对象
@@ -17,6 +18,6 @@ public interface DoudianContentCreator {
    * @return 抖店请求数据内容
    * @throws DoudianContentCreationException 无法创建抛出此异常
    */
-  <D> DoudianContent<D> create(DoudianParams params, AppConfig appConfig) throws DoudianContentCreationException;
+  <D extends ResultData> DoudianContent<D> create(DoudianParams params, AppConfig appConfig) throws DoudianContentCreationException;
 
 }

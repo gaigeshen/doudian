@@ -3,6 +3,7 @@ package me.gaigeshen.doudian.client;
 import me.gaigeshen.doudian.client.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
 import me.gaigeshen.doudian.request.content.MetadataAttributes;
+import me.gaigeshen.doudian.request.result.ResultData;
 
 /**
  * 抖店请求数据内容
@@ -12,7 +13,7 @@ import me.gaigeshen.doudian.request.content.MetadataAttributes;
 @MetadataAttributes(
         Constants.API_URL
 )
-public class DoudianContent<D> extends AbstractContent<DoudianResult<D>> {
+public class DoudianContent<D extends ResultData> extends AbstractContent<DoudianResult<D>> {
 
   private final String method;
 
@@ -35,7 +36,7 @@ public class DoudianContent<D> extends AbstractContent<DoudianResult<D>> {
     this.sign = builder.sign;
   }
 
-  public static <D> Builder<D> builder() {
+  public static <D extends ResultData> Builder<D> builder() {
     return new Builder<>();
   }
 
@@ -68,7 +69,7 @@ public class DoudianContent<D> extends AbstractContent<DoudianResult<D>> {
    *
    * @author gaigeshen
    */
-  public static class Builder<D> {
+  public static class Builder<D extends ResultData> {
 
     private String method;
 

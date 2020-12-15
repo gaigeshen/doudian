@@ -9,6 +9,7 @@ import me.gaigeshen.doudian.client.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
 import me.gaigeshen.doudian.request.content.Metadata;
 import me.gaigeshen.doudian.request.content.MetadataAttributes;
+import me.gaigeshen.doudian.request.result.ResultDataTransformerException;
 import me.gaigeshen.doudian.util.Asserts;
 
 /**
@@ -45,7 +46,7 @@ public class DefaultAccessTokenRefresher implements AccessTokenRefresher {
     }
     try {
       return AccessTokenDataTransformer.getInstance().transform(data);
-    } catch (DoudianDataTransformerException e) {
+    } catch (ResultDataTransformerException e) {
       throw new AccessTokenRefreshException("Could not transform to access token from data", e);
     }
   }

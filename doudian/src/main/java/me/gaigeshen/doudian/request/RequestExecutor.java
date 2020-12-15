@@ -5,6 +5,7 @@ import me.gaigeshen.doudian.http.ResponseContent;
 import me.gaigeshen.doudian.request.content.Content;
 import me.gaigeshen.doudian.request.result.AbstractResult;
 import me.gaigeshen.doudian.request.result.Result;
+import me.gaigeshen.doudian.request.result.ResultData;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -78,7 +79,7 @@ public interface RequestExecutor extends Closeable {
    * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content) throws RequestExecutionException {
+  default <D extends ResultData> D executeForData(Content<? extends AbstractResult<D>> content) throws RequestExecutionException {
     AbstractResult<D> result = execute(content);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -96,7 +97,7 @@ public interface RequestExecutor extends Closeable {
    * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken) throws RequestExecutionException {
+  default <D extends ResultData> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, accessToken);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -114,7 +115,7 @@ public interface RequestExecutor extends Closeable {
    * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, Object... urlValues) throws RequestExecutionException {
+  default <D extends ResultData> D executeForData(Content<? extends AbstractResult<D>> content, Object... urlValues) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, urlValues);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);
@@ -133,7 +134,7 @@ public interface RequestExecutor extends Closeable {
    * @throws RequestExecutionException Could not execute
    * @throws RequestExecutionResultException If the abstract result is failed
    */
-  default <D> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken, Object... urlValues) throws RequestExecutionException {
+  default <D extends ResultData> D executeForData(Content<? extends AbstractResult<D>> content, String accessToken, Object... urlValues) throws RequestExecutionException {
     AbstractResult<D> result = execute(content, accessToken, urlValues);
     if (result.failed()) {
       throw new RequestExecutionResultException(result.getMessage()).setContent(content).setResult(result);

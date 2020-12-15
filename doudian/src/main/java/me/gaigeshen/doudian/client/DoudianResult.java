@@ -1,13 +1,14 @@
 package me.gaigeshen.doudian.client;
 
 import me.gaigeshen.doudian.request.result.AbstractResult;
+import me.gaigeshen.doudian.request.result.ResultData;
 
 /**
  * 抖店请求执行结果
  *
  * @author gaigeshen
  */
-public class DoudianResult<D> implements AbstractResult<D> {
+public class DoudianResult<D extends ResultData> implements AbstractResult<D> {
 
   private Integer errNo;
 

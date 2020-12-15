@@ -5,7 +5,6 @@ import me.gaigeshen.doudian.authorization.AccessToken;
 import me.gaigeshen.doudian.authorization.AccessTokenManager;
 import me.gaigeshen.doudian.authorization.AuthorizationException;
 import me.gaigeshen.doudian.client.DoudianClient;
-import me.gaigeshen.doudian.client.DoudianDataTransformerException;
 import me.gaigeshen.doudian.client.DoudianExecutionException;
 import me.gaigeshen.doudian.client.DoudianResult;
 import me.gaigeshen.doudian.client.config.AppConfig;
@@ -13,6 +12,7 @@ import me.gaigeshen.doudian.client.config.Constants;
 import me.gaigeshen.doudian.request.content.AbstractContent;
 import me.gaigeshen.doudian.request.content.Metadata;
 import me.gaigeshen.doudian.request.content.MetadataAttributes;
+import me.gaigeshen.doudian.request.result.ResultDataTransformerException;
 import me.gaigeshen.doudian.util.Asserts;
 
 /**
@@ -56,7 +56,7 @@ public class DefaultAuthorizationFlow extends AbstractAuthorizationFlow {
     }
     try {
       return AccessTokenDataTransformer.getInstance().transform(data);
-    } catch (DoudianDataTransformerException e) {
+    } catch (ResultDataTransformerException e) {
       throw new AuthorizationException("Could not transform to access token from data", e);
     }
   }

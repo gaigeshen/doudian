@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import me.gaigeshen.doudian.authorization.AccessTokenStore;
 import me.gaigeshen.doudian.client.config.AppConfig;
 import me.gaigeshen.doudian.http.WebClientConfig;
+import me.gaigeshen.doudian.request.result.ResultData;
 import me.gaigeshen.doudian.util.TimestampUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -94,7 +95,7 @@ public class DefaultDoudianClient extends AbstractDoudianClient {
     }
 
     @Override
-    public <D> DoudianContent<D> create(DoudianParams params, AppConfig appConfig) throws DoudianContentCreationException {
+    public <D extends ResultData> DoudianContent<D> create(DoudianParams params, AppConfig appConfig) throws DoudianContentCreationException {
       Map<String, String> orderedParams = new LinkedHashMap<>();
       for (DoudianParams.Param param : params) {
         orderedParams.put(param.getName(), String.valueOf(param.getValue()));

@@ -5,7 +5,7 @@ package me.gaigeshen.doudian.request.result;
  *
  * @author gaigeshen
  */
-public interface AbstractResult<D> extends Result {
+public interface AbstractResult<D extends ResultData> extends Result {
   /**
    * Default success code
    */
