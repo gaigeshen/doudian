@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author gaigeshen
  * @see DoudianParam
  */
-public class DoudianParamsBuilderFromObjectImpl implements DoudianParamsBuilder<Object> {
+public class DoudianParamsBuilderFromSourceImpl implements DoudianParamsBuilder<DoudianParamsSource> {
 
-  private static final DoudianParamsBuilderFromObjectImpl INSTANCE = new DoudianParamsBuilderFromObjectImpl();
+  private static final DoudianParamsBuilderFromSourceImpl INSTANCE = new DoudianParamsBuilderFromSourceImpl();
 
   private final Map<Class<?>, Map<String, Field>> sourceFieldsCache = new ConcurrentHashMap<>();
 
@@ -24,17 +24,17 @@ public class DoudianParamsBuilderFromObjectImpl implements DoudianParamsBuilder<
    *
    * @return 全局共享的抖店请求参数构建器
    */
-  public static DoudianParamsBuilderFromObjectImpl getInstance() {
+  public static DoudianParamsBuilderFromSourceImpl getInstance() {
     return INSTANCE;
   }
 
   /**
    * @see #getInstance()
    */
-  private DoudianParamsBuilderFromObjectImpl() { }
+  private DoudianParamsBuilderFromSourceImpl() { }
 
   @Override
-  public DoudianParams build(String method, Object source) throws DoudianParamsBuildingException {
+  public DoudianParams build(String method, DoudianParamsSource source) throws DoudianParamsBuildingException {
     Asserts.notBlank(method, "method");
     Asserts.notNull(source, "source");
 

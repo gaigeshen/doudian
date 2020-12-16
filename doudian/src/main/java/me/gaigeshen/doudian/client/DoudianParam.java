@@ -3,10 +3,10 @@ package me.gaigeshen.doudian.client;
 import java.lang.annotation.*;
 
 /**
- * 此注解用在字段上，来表达某个抖店请求参数
+ * 此注解用在抖店请求参数来源字段上，来表达某个抖店请求参数
  *
  * @author gaigeshen
- * @see DoudianParamsBuilderFromObjectImpl
+ * @see DoudianParamsBuilderFromSourceImpl
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

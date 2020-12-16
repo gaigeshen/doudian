@@ -5,7 +5,7 @@ package me.gaigeshen.doudian.client;
  *
  * @author gaigeshen
  */
-public interface DoudianParamsBuilder<S> {
+public interface DoudianParamsBuilder<S extends DoudianParamsSource> {
   /**
    * 调用此方法构建抖店请求参数
    *

@@ -38,6 +38,20 @@ public interface DoudianClient extends Closeable {
   /**
    * 执行远程服务请求
    *
+   * @param paramsSource 抖店请求参数来源不能为空
+   * @param method 该抖店请求参数对应的远程服务名称，不能为空
+   * @param shopId 店铺编号不能为空
+   * @param <D> 成功执行请求之后返回的抖店数据内容的类型
+   * @return 抖店数据内容
+   * @throws DoudianExecutionException 无法执行远程服务请求
+   * @throws DoudianExecutionResultException 成功执行远程服务请求，但是业务结果失败
+   * @throws DoudianExecutionMissingAccessTokenException 该店铺没有访问令牌
+   */
+  <D extends ResultData> D execute(DoudianParamsSource paramsSource, String method, String shopId) throws DoudianExecutionException;
+
+  /**
+   * 执行远程服务请求
+   *
    * @param params 抖店请求参数不能为空
    * @param shopId 店铺编号不能为空
    * @param <D> 成功执行请求之后返回的抖店数据内容的类型

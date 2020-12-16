@@ -182,6 +182,18 @@ public abstract class AbstractDoudianClient implements DoudianClient {
   }
 
   @Override
+  public <D extends ResultData> D execute(DoudianParamsSource paramsSource, String method, String shopId) throws DoudianExecutionException {
+    if (Objects.isNull(paramsSource) || Objects.isNull(shopId)) {
+      throw new DoudianExecutionException("'paramsSource' and 'shopId' cannot be null");
+    }
+    if (Objects.isNull(method)) {
+      throw new DoudianExecutionException("'method' cannot be null");
+    }
+    DoudianParams params = DoudianParamsBuilderFromSourceImpl.getInstance().build(method, paramsSource);
+    return execute(params, shopId);
+  }
+
+  @Override
   public final <D extends ResultData> D execute(DoudianParams params, String shopId) throws DoudianExecutionException {
     DoudianContentCreator contentCreator = getContentCreator();
     if (Objects.isNull(contentCreator)) {
