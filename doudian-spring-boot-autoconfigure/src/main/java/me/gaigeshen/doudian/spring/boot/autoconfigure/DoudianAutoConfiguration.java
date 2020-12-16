@@ -52,7 +52,7 @@ public class DoudianAutoConfiguration {
     return new AccessTokenStoreImpl();
   }
 
-  @ConditionalOnProperty(prefix = "doudian", name = "enable-authorization-flow")
+  @ConditionalOnProperty(prefix = "doudian", name = "enable-authorization")
   @Configuration
   protected static class AuthorizationFlowConfiguration {
 
