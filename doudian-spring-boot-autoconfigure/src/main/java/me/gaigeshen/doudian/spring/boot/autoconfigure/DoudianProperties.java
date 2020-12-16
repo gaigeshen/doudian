@@ -33,7 +33,7 @@ public class DoudianProperties {
   /**
    * 是否启用授权流程处理，如果启用则会开启授权流程的支持，同时也会开启访问令牌管理器
    */
-  private boolean enableAuthorizationFlow = false;
+  private boolean enableAuthorization = false;
 
   public String getAppKey() {
     return appKey;
@@ -75,12 +75,12 @@ public class DoudianProperties {
     this.accessTokenStoreType = accessTokenStoreType;
   }
 
-  public boolean isEnableAuthorizationFlow() {
-    return enableAuthorizationFlow;
+  public boolean isEnableAuthorization() {
+    return enableAuthorization;
   }
 
-  public void setEnableAuthorizationFlow(boolean enableAuthorizationFlow) {
-    this.enableAuthorizationFlow = enableAuthorizationFlow;
+  public void setEnableAuthorization(boolean enableAuthorization) {
+    this.enableAuthorization = enableAuthorization;
   }
 
   /**

@@ -3,9 +3,7 @@ package me.gaigeshen.doudian.spring.boot.autoconfigure;
 import me.gaigeshen.doudian.authorization.AccessTokenStore;
 import me.gaigeshen.doudian.authorization.AccessTokenStoreImpl;
 import me.gaigeshen.doudian.authorization.AccessTokenStoreJdbcImpl;
-import me.gaigeshen.doudian.client.DoudianClient;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,16 +41,5 @@ public class AccessTokenStoreConfiguration {
   private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> doudianDataSource) {
     DataSource dataSourceIfAvailable = doudianDataSource.getIfAvailable();
     return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
-  }
-
-  @Bean
-  public static DataSourceInitializerDoudianDependencyPostProcessor dataSourceInitializerDoudianDependencyPostProcessor() {
-    return new DataSourceInitializerDoudianDependencyPostProcessor();
-  }
-
-  private static class DataSourceInitializerDoudianDependencyPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
-    public DataSourceInitializerDoudianDependencyPostProcessor() {
-      super(DoudianClient.class, "doudianDataSourceInitializer");
-    }
   }
 }
