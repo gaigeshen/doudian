@@ -137,9 +137,11 @@ public class JsonUtils {
       Map.Entry<String, JsonNode> field = fields.next();
       JsonNode value = field.getValue();
       if (value.isArray()) {
+        List<Map<String, Object>> array = new LinkedList<>();
         for (JsonNode internalJsonNode : value) {
-          result.put(field.getKey(), parseMapping(internalJsonNode));
+          array.add(parseMapping(internalJsonNode));
         }
+        result.put(field.getKey(), array);
         continue;
       }
       if (value.isValueNode()) {
